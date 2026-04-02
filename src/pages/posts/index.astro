@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = await getCollection('posts', ({ data }) => data.draft !== true);
+posts.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+const BASE_URL = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Posts | Knowledge Journal">
+  <header class="mb-6">
+    <h1 class="text-3xl font-semibold text-slate-900">Posts</h1>
+    <p class="text-slate-600">Danh sách ghi chú thống nhất cho toàn bộ dự án.</p>
+  </header>
+
+  <div class="space-y-3">
+    {posts.map((post) => (
+      <article class="rounded-md border-l-4 border-indigo-600 bg-slate-100 p-4">
+        <a class="font-semibold text-slate-900" href={`${BASE_URL}posts/${post.id}`}>{post.data.title}</a>
+        <p class="mt-1 text-sm text-slate-600">{post.data.summary}</p>
+        <p class="mt-2 text-xs text-slate-500">{post.data.publishedAt.toISOString().slice(0, 10)}</p>
+      </article>
+    ))}
+  </div>
+</BaseLayout>

@@ -1,66 +1,62 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PrimitiveCard from '../components/PrimitiveCard.astro';
-
-const sortByDate = <T extends { data: { publishedAt: Date } }>(a: T, b: T) =>
-	b.data.publishedAt.getTime() - a.data.publishedAt.getTime();
-
-const [primitives, research, linking] = await Promise.all([
-	getCollection('primitives', ({ data }) => data.draft !== true),
-	getCollection('research', ({ data }) => data.draft !== true),
-	getCollection('linking', ({ data }) => data.draft !== true)
-]);
-
-const latestPrimitives = primitives.sort(sortByDate).slice(0, 3);
-const latestResearch = research.sort(sortByDate).slice(0, 3);
-const latestLinking = linking.sort(sortByDate).slice(0, 3);
+const posts = await getCollection('posts', ({ data }) => data.draft !== true);
+posts.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 const BASE_URL = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="Knowledge Journal">
 	<section class="space-y-2">
-		<h1 class="text-3xl font-semibold text-slate-900">Mathematical Primitives → AI Research</h1>
-		<p class="text-slate-600">A personal learning journal for connecting first principles to model-building ideas.</p>
+		<h1 class="text-3xl font-semibold text-slate-900">Knowledge Journal</h1>
+		<p class="text-slate-600">Một không gian ghi chú thống nhất cho toán học, AI và các liên kết ý tưởng.</p>
 	</section>
 
-	<section class="mt-8 space-y-3">
+	<section class="mt-8 space-y-4">
 		<div class="flex items-center justify-between">
-			<h2 class="text-xl font-semibold">Latest primitives</h2>
-			<a href={`${BASE_URL}primitives`} class="text-sm">View all</a>
+			<h2 class="text-xl font-semibold">All posts</h2>
+			<a href={`${BASE_URL}posts`} class="text-sm">Open posts route</a>
 		</div>
-		<div class="space-y-3">
-			{latestPrimitives.map((item) => <PrimitiveCard item={item} />)}
-		</div>
-	</section>
-
-	<section class="mt-10 space-y-3">
-		<div class="flex items-center justify-between">
-			<h2 class="text-xl font-semibold">Latest research</h2>
-			<a href={`${BASE_URL}research`} class="text-sm">View all</a>
-		</div>
-		<div class="space-y-3">
-			{latestResearch.map((item) => (
-				<article class="rounded-md border-l-4 border-teal-600 bg-slate-100 p-4">
-					<a class="font-semibold text-slate-900" href={`${BASE_URL}research/${item.id}`}>{item.data.title}</a>
-					<p class="mt-1 text-xs text-slate-500">{item.data.publishedAt.toISOString().slice(0, 10)} • {item.data.trend}</p>
+		<input
+			id="search-input"
+			type="search"
+			placeholder="Tìm theo title, summary, tags..."
+			class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+		/>
+		<div id="posts-list" class="space-y-3">
+			{posts.map((post) => (
+				<article
+					class="rounded-md border-l-4 border-indigo-600 bg-slate-100 p-4"
+					data-title={post.data.title.toLowerCase()}
+					data-summary={post.data.summary.toLowerCase()}
+					data-tags={(post.data.tags ?? []).join(' ').toLowerCase()}
+				>
+					<a class="font-semibold text-slate-900" href={`${BASE_URL}posts/${post.id}`}>{post.data.title}</a>
+					<p class="mt-1 text-sm text-slate-600">{post.data.summary}</p>
+					<div class="mt-2 flex flex-wrap gap-2">
+						{(post.data.tags ?? []).map((tag) => (
+							<span class="rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs text-indigo-700">{tag}</span>
+						))}
+					</div>
 				</article>
 			))}
 		</div>
 	</section>
 
-	<section class="mt-10 space-y-3">
-		<div class="flex items-center justify-between">
-			<h2 class="text-xl font-semibold">Latest linking notes</h2>
-			<a href={`${BASE_URL}linking`} class="text-sm">View all</a>
-		</div>
-		<div class="space-y-3">
-			{latestLinking.map((item) => (
-				<article class="rounded-md border-l-4 border-amber-600 bg-slate-100 p-4">
-					<a class="font-semibold text-slate-900" href={`${BASE_URL}linking/${item.id}`}>{item.data.title}</a>
-					<p class="mt-1 text-xs text-slate-500">{item.data.publishedAt.toISOString().slice(0, 10)}</p>
-				</article>
-			))}
-		</div>
-	</section>
+	<script>
+		const input = document.getElementById('search-input') as HTMLInputElement | null;
+		const cards = Array.from(document.querySelectorAll('#posts-list article')) as HTMLElement[];
+
+		input?.addEventListener('input', (e) => {
+			const target = e.target as HTMLInputElement | null;
+			const q = String(target?.value ?? '').trim().toLowerCase();
+			for (const card of cards) {
+				const title = card.dataset.title ?? '';
+				const summary = card.dataset.summary ?? '';
+				const tags = card.dataset.tags ?? '';
+				const matched = q === '' || title.includes(q) || summary.includes(q) || tags.includes(q);
+				card.style.display = matched ? '' : 'none';
+			}
+		});
+	</script>
 </BaseLayout>

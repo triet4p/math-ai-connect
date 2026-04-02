@@ -5,7 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 <BaseLayout title="Graph | Knowledge Journal">
   <section class="space-y-2">
     <h1 class="text-3xl font-semibold text-slate-900">Knowledge Graph</h1>
-    <p class="text-slate-600">Primitives (indigo), research notes (teal), and linking notes (amber).</p>
+    <p class="text-slate-600">Graph lien ket giua cac post thong qua metadata refs.</p>
   </section>
 
   <div class="mt-6 overflow-hidden rounded-md border border-slate-200 bg-slate-100">
@@ -20,9 +20,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     const height = svg.clientHeight;
 
     const colorByType = {
-      primitive: '#4f46e5',
-      research: '#0d9488',
-      linking: '#d97706'
+      post: '#2563eb'
     };
 
     const createEl = (name) => document.createElementNS('http://www.w3.org/2000/svg', name);

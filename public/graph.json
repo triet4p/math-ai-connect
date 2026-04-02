@@ -1,11 +1,28 @@
 {
   "nodes": [
     {
-      "id": "primitives:jacobian",
-      "label": "Ma trận Jacobian - từ bản chất toán học đến ứng dụng điều khiển và AI",
-      "type": "primitive",
-      "url": "/primitives/jacobian"
+      "id": "posts:hessian",
+      "label": "Ma trận Hessian",
+      "type": "post",
+      "url": "/posts/hessian"
+    },
+    {
+      "id": "posts:jacobian",
+      "label": "Ma trận Jacobian",
+      "type": "post",
+      "url": "/posts/jacobian"
     }
   ],
-  "edges": []
+  "edges": [
+    {
+      "source": "posts:hessian",
+      "target": "posts:jacobian",
+      "type": "reference"
+    },
+    {
+      "source": "posts:jacobian",
+      "target": "posts:hessian",
+      "type": "reference"
+    }
+  ]
 }

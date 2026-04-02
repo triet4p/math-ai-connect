@@ -1,5 +1,3 @@
-// @ts-check
-import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import tailwindcss from '@tailwindcss/vite';
 import remarkMath from 'remark-math';
@@ -7,6 +5,7 @@ import rehypeKatex from 'rehype-katex';
 
 const owner = 'triet4p';
 const repo = 'math-ai-connect';
+const tailwindVitePlugin = /** @type {any} */ (tailwindcss());
 
 function graphIntegration() {
   return {
@@ -21,12 +20,12 @@ function graphIntegration() {
 }
 
 // https://astro.build/config
-export default defineConfig({
+export default {
   site: `https://${owner}.github.io`,
   base: `/${repo}/`,
-  vite: {
-    plugins: [tailwindcss()]
-  },
+  vite: /** @type {any} */ ({
+    plugins: [tailwindVitePlugin]
+  }),
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex]
@@ -35,4 +34,4 @@ export default defineConfig({
     mdx(),
     graphIntegration()
   ]
-});
+};

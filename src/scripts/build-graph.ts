@@ -6,14 +6,14 @@ import { fileURLToPath } from 'node:url';
 type GraphNode = {
   id: string;
   label: string;
-  type: 'primitive' | 'research' | 'linking';
+  type: 'post';
   url: string;
 };
 
 type GraphEdge = {
   source: string;
   target: string;
-  type: 'connection' | 'primitiveRef' | 'researchRef';
+  type: 'reference';
 };
 
 type GraphPayload = {
@@ -21,31 +21,18 @@ type GraphPayload = {
   edges: GraphEdge[];
 };
 
-type PrimitiveData = {
+type PostData = {
   title: string;
   draft?: boolean;
-  connections?: string[];
-};
-
-type ResearchData = {
-  title: string;
-  draft?: boolean;
-  primitiveRefs?: string[];
-};
-
-type LinkingData = {
-  title: string;
-  draft?: boolean;
-  primitiveRefs?: string[];
-  researchRefs?: string[];
+  refs?: string[];
 };
 
 function toPath(url: URL): string {
   return fileURLToPath(url);
 }
 
-async function getEntries<T extends { title: string; draft?: boolean }>(collectionName: string) {
-  const collectionDir = join(process.cwd(), 'src', 'content', collectionName);
+async function getEntries<T extends { title: string; draft?: boolean }>() {
+  const collectionDir = join(process.cwd(), 'src', 'content');
   let files: string[] = [];
   try {
     files = await readdir(collectionDir);
@@ -74,30 +61,14 @@ async function getEntries<T extends { title: string; draft?: boolean }>(collecti
 }
 
 export async function buildGraphData(distDir?: URL) {
-  const [primitives, research, linking] = await Promise.all([
-    getEntries<PrimitiveData>('primitives'),
-    getEntries<ResearchData>('research'),
-    getEntries<LinkingData>('linking')
-  ]);
+  const posts = await getEntries<PostData>();
 
   const nodes: GraphNode[] = [
-    ...primitives.map((entry) => ({
-      id: `primitives:${entry.slug}`,
+    ...posts.map((entry) => ({
+      id: `posts:${entry.slug}`,
       label: entry.data.title,
-      type: 'primitive' as const,
-      url: `/primitives/${entry.slug}`
-    })),
-    ...research.map((entry) => ({
-      id: `research:${entry.slug}`,
-      label: entry.data.title,
-      type: 'research' as const,
-      url: `/research/${entry.slug}`
-    })),
-    ...linking.map((entry) => ({
-      id: `linking:${entry.slug}`,
-      label: entry.data.title,
-      type: 'linking' as const,
-      url: `/linking/${entry.slug}`
+      type: 'post' as const,
+      url: `/posts/${entry.slug}`
     }))
   ];
 
@@ -112,24 +83,9 @@ export async function buildGraphData(distDir?: URL) {
     }
   };
 
-  for (const entry of primitives) {
-    for (const connection of entry.data.connections ?? []) {
-      addEdge(`primitives:${entry.slug}`, `primitives:${connection}`, 'connection');
-    }
-  }
-
-  for (const entry of research) {
-    for (const ref of entry.data.primitiveRefs ?? []) {
-      addEdge(`research:${entry.slug}`, `primitives:${ref}`, 'primitiveRef');
-    }
-  }
-
-  for (const entry of linking) {
-    for (const primitiveRef of entry.data.primitiveRefs ?? []) {
-      addEdge(`linking:${entry.slug}`, `primitives:${primitiveRef}`, 'primitiveRef');
-    }
-    for (const researchRef of entry.data.researchRefs ?? []) {
-      addEdge(`linking:${entry.slug}`, `research:${researchRef}`, 'researchRef');
+  for (const entry of posts) {
+    for (const ref of entry.data.refs ?? []) {
+      addEdge(`posts:${entry.slug}`, `posts:${ref}`, 'reference');
     }
   }
 
