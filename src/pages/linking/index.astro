@@ -1,0 +1,23 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const entries = await getCollection('linking', ({ data }) => data.draft !== true);
+entries.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+---
+
+<BaseLayout title="Linking | Knowledge Journal">
+  <header class="mb-6">
+    <h1 class="text-3xl font-semibold text-slate-900">Linking Notes</h1>
+    <p class="text-slate-600">Synthesis posts connecting primitives and research threads.</p>
+  </header>
+
+  <div class="space-y-3">
+    {entries.map((entry) => (
+      <article class="rounded-md border-l-4 border-amber-600 bg-slate-100 p-4">
+        <a class="font-semibold text-slate-900" href={`/linking/${entry.id}`}>{entry.data.title}</a>
+        <p class="mt-1 text-xs text-slate-500">{entry.data.publishedAt.toISOString().slice(0, 10)}</p>
+      </article>
+    ))}
+  </div>
+</BaseLayout>

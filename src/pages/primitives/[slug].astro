@@ -1,0 +1,58 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { globalMdxComponents } from '../../components/mdx-components';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('primitives', ({ data }) => data.draft !== true);
+  return entries.map((entry) => ({
+    params: { slug: entry.id }
+  }));
+}
+
+const { slug } = Astro.params;
+if (!slug) {
+  throw new Error('Missing primitive slug');
+}
+
+const entry = await getEntry('primitives', slug);
+if (!entry || entry.data.draft === true) {
+  throw new Error(`Unknown primitive: ${slug}`);
+}
+
+const { Content } = await render(entry);
+
+const [researchPosts, linkingPosts] = await Promise.all([
+  getCollection('research', ({ data }) => data.draft !== true),
+  getCollection('linking', ({ data }) => data.draft !== true)
+]);
+
+const connectedPrimitives = (
+  await Promise.all(entry.data.connections.map((ref) => getEntry('primitives', ref)))
+).filter(Boolean);
+
+const relatedFromResearch = researchPosts
+  .filter((post) => post.data.primitiveRefs.includes(entry.id))
+  .map((post) => ({ href: `/research/${post.id}`, title: post.data.title, kind: 'research' as const }));
+
+const relatedFromLinking = linkingPosts
+  .filter((post) => post.data.primitiveRefs.includes(entry.id))
+  .map((post) => ({ href: `/linking/${post.id}`, title: post.data.title, kind: 'linking' as const }));
+
+const related = [
+  ...connectedPrimitives.map((post) => ({ href: `/primitives/${post!.id}`, title: post!.data.title, kind: 'primitive' as const })),
+  ...relatedFromResearch,
+  ...relatedFromLinking
+].slice(0, 8);
+---
+
+<PostLayout
+  title={entry.data.title}
+  collection="primitives"
+  group={entry.data.group}
+  publishedAt={entry.data.publishedAt}
+  primitiveRefs={entry.data.connections}
+  related={related}
+>
+  <Content components={globalMdxComponents} />
+</PostLayout>

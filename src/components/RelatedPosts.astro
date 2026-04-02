@@ -1,0 +1,32 @@
+---
+type Item = {
+  href: string;
+  title: string;
+  kind: 'primitive' | 'research' | 'linking';
+};
+
+interface Props {
+  items?: Item[];
+}
+
+const { items = [] } = Astro.props as Props;
+
+const colorByKind = {
+  primitive: 'border-indigo-300 bg-indigo-50 text-indigo-700',
+  research: 'border-teal-300 bg-teal-50 text-teal-700',
+  linking: 'border-amber-300 bg-amber-50 text-amber-700'
+};
+---
+
+{items.length > 0 && (
+  <section class="border-t border-slate-200 pt-6">
+    <h2 class="mb-3 text-lg font-semibold text-slate-900">Related posts</h2>
+    <div class="flex flex-wrap gap-2">
+      {items.map((item) => (
+        <a href={item.href} class={`rounded-full border px-3 py-1 text-xs font-medium ${colorByKind[item.kind]}`}>
+          {item.title}
+        </a>
+      ))}
+    </div>
+  </section>
+)}

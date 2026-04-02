@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "primitives:jacobian",
+      "label": "Ma trận Jacobian - từ bản chất toán học đến ứng dụng điều khiển và AI",
+      "type": "primitive",
+      "url": "/primitives/jacobian"
+    }
+  ],
+  "edges": [
+    {
+      "source": "primitives:jacobian",
+      "target": "primitives:gradient",
+      "type": "connection"
+    },
+    {
+      "source": "primitives:jacobian",
+      "target": "primitives:hessian",
+      "type": "connection"
+    },
+    {
+      "source": "primitives:jacobian",
+      "target": "primitives:divergence",
+      "type": "connection"
+    },
+    {
+      "source": "primitives:jacobian",
+      "target": "primitives:manifold",
+      "type": "connection"
+    }
+  ]
+}

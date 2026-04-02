@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Graph | Knowledge Journal">
+  <section class="space-y-2">
+    <h1 class="text-3xl font-semibold text-slate-900">Knowledge Graph</h1>
+    <p class="text-slate-600">Primitives (indigo), research notes (teal), and linking notes (amber).</p>
+  </section>
+
+  <div class="mt-6 overflow-hidden rounded-md border border-slate-200 bg-slate-100">
+    <svg id="graph" class="h-[560px] w-full"></svg>
+  </div>
+
+  <script type="module">
+    import { forceCenter, forceLink, forceManyBody, forceSimulation } from 'd3-force';
+
+    const svg = document.getElementById('graph');
+    const width = svg.clientWidth;
+    const height = svg.clientHeight;
+
+    const colorByType = {
+      primitive: '#4f46e5',
+      research: '#0d9488',
+      linking: '#d97706'
+    };
+
+    const createEl = (name) => document.createElementNS('http://www.w3.org/2000/svg', name);
+    const setAttrs = (el, attrs) => {
+      Object.entries(attrs).forEach(([key, value]) => {
+        el.setAttribute(key, String(value));
+      });
+    };
+
+    const response = await fetch(`${import.meta.env.BASE_URL}graph.json`);
+    const data = await response.json();
+
+    const nodes = data.nodes.map((node) => ({ ...node }));
+    const links = data.edges.map((edge) => ({ ...edge }));
+
+    const linkEls = links.map(() => {
+      const line = createEl('line');
+      setAttrs(line, { stroke: '#94a3b8', 'stroke-width': 1 });
+      svg.appendChild(line);
+      return line;
+    });
+
+    const nodeEls = nodes.map((node) => {
+      const group = createEl('g');
+      const circle = createEl('circle');
+      const label = createEl('text');
+
+      setAttrs(circle, {
+        r: 7,
+        fill: colorByType[node.type] || '#64748b',
+        cursor: 'pointer'
+      });
+
+      setAttrs(label, {
+        x: 10,
+        y: 4,
+        'font-size': 10,
+        fill: '#1e293b',
+        'font-family': 'ui-monospace, SFMono-Regular, Menlo, monospace',
+        'pointer-events': 'none'
+      });
+      label.textContent = node.label;
+
+      circle.addEventListener('click', () => {
+        window.location.href = `${import.meta.env.BASE_URL.replace(/\/$/, '')}${node.url}`;
+      });
+
+      group.appendChild(circle);
+      group.appendChild(label);
+      svg.appendChild(group);
+      return group;
+    });
+
+    const simulation = forceSimulation(nodes)
+      .force('charge', forceManyBody().strength(-180))
+      .force('center', forceCenter(width / 2, height / 2))
+      .force(
+        'link',
+        forceLink(links)
+          .id((d) => d.id)
+          .distance(90)
+      );
+
+    simulation.on('tick', () => {
+      for (let i = 0; i < links.length; i += 1) {
+        const link = links[i];
+        setAttrs(linkEls[i], {
+          x1: link.source.x,
+          y1: link.source.y,
+          x2: link.target.x,
+          y2: link.target.y
+        });
+      }
+
+      for (let i = 0; i < nodes.length; i += 1) {
+        const node = nodes[i];
+        setAttrs(nodeEls[i], { transform: `translate(${node.x}, ${node.y})` });
+      }
+    });
+  </script>
+</BaseLayout>

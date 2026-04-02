@@ -1,0 +1,149 @@
+---
+title: Ma trận Jacobian - từ bản chất toán học đến ứng dụng điều khiển và AI
+symbol: J
+group: geometry
+summary: Jacobian là tổng đạo hàm mô tả độ nhạy cục bộ của hệ đa biến và là công cụ tuyến tính hóa hệ phi tuyến.
+connections:
+  - gradient
+  - hessian
+  - divergence
+  - manifold
+aiHooks:
+  - backprop
+  - robotics
+  - control
+draft: false
+publishedAt: 2026-04-02
+---
+
+# Báo cáo phân tích: Ma trận Jacobian
+
+<Callout type="insight">
+Jacobian không chỉ là công cụ tính toán. Nó là ngôn ngữ chung để mô tả cách một hệ phi tuyến phản ứng cục bộ trước các biến thiên nhỏ.
+</Callout>
+
+## 0. Ma trận Jacobian là gì?
+
+Trong giải tích vectơ và điều khiển tự động, Jacobian là tổng đạo hàm (total derivative) của một hàm đa biến.
+
+Xét hàm $F: \mathbb{R}^n \to \mathbb{R}^m$, ma trận Jacobian $J_F$ là tập hợp tất cả đạo hàm riêng bậc nhất, mô tả cách từng thành phần đầu ra đổi theo từng thành phần đầu vào.
+
+<Math label="Công thức tổng quát">
+$J_F(x)=\left(\frac{\partial y_i}{\partial x_j}\right)$
+</Math>
+
+Thuộc tính quan trọng:
+
+- Kích thước: $m \times n$
+- Khi $m=n$: có định thức Jacobian $|J|$
+- Cung cấp xấp xỉ tuyến tính địa phương tốt nhất quanh điểm khả vi
+
+## 1. Động lực tồn tại: tại sao cần Jacobian?
+
+Hầu hết hệ thực tế là phi tuyến: robot, xe tự hành, bồn chứa, quy trình hóa học. Trong khi đó, nhiều kỹ thuật điều khiển kinh điển dựa trên mô hình tuyến tính.
+
+Jacobian cho phép tuyến tính hóa quanh điểm vận hành để áp dụng công cụ tuyến tính một cách kiểm soát.
+
+- Hệ phi tuyến có độ nhạy phụ thuộc trạng thái hiện tại
+- Kỹ sư cần "độ dốc đa chiều" để thiết kế điều khiển
+- Tuyến tính hóa quanh cân bằng giúp đưa hệ về dạng LTI cục bộ
+
+$$
+\delta \dot{x} = A\,\delta x + B\,\delta u
+$$
+
+với:
+
+$$
+A = \left.\frac{\partial f}{\partial x}\right|_{(\bar{x},\bar{u})}, \quad
+B = \left.\frac{\partial f}{\partial u}\right|_{(\bar{x},\bar{u})}
+$$
+
+## 2. Trực giác hình học: bản đồ biến dạng không gian
+
+<Intuition>
+Hãy tưởng tượng ánh xạ phi tuyến như một tờ giấy bị uốn cong. Jacobian giống một chiếc kính hiển vi, nhìn vào vùng cực nhỏ để thấy bề mặt "gần như phẳng" và đo được phép biến đổi tuyến tính cục bộ.
+</Intuition>
+
+Ý nghĩa hình học:
+
+- $|\det(J)|$: hệ số co giãn diện tích/thể tích khi đổi biến
+- $\det(J)>0$: bảo toàn chiều định hướng
+- $\det(J)<0$: lật chiều
+- $\det(J)=0$: điểm kỳ dị (suy biến), mất khả năng đảo cục bộ
+
+## 3. Khung công thức tối thiểu
+
+Định nghĩa theo phần tử:
+
+$$
+J_F(x)=
+\begin{bmatrix}
+\frac{\partial y_1}{\partial x_1} & \cdots & \frac{\partial y_1}{\partial x_n} \\
+\vdots & \ddots & \vdots \\
+\frac{\partial y_m}{\partial x_1} & \cdots & \frac{\partial y_m}{\partial x_n}
+\end{bmatrix}
+$$
+
+Tuyến tính hóa quanh điểm vận hành $p$:
+
+$$
+F(x) \approx F(p) + J_F(p)(x-p)
+$$
+
+## 4. Ví dụ thực hành: hệ bồn chứa
+
+Hệ bồn chứa trộn nước nóng/lạnh có động học phi tuyến do dòng xả tỉ lệ $\sqrt{h}$.
+
+Tại điểm vận hành $h=1\,m$, $T_T=75^\circ C$:
+
+- $\bar{q}_C=0.029$
+- $\bar{q}_H=0.126$
+
+Mô hình tuyến tính hóa cục bộ cho biến lệch thu được:
+
+$$
+A =
+\begin{bmatrix}
+-0.0258 & 0 \\
+0 & -0.0517
+\end{bmatrix},
+\quad
+B =
+\begin{bmatrix}
+0.333 & 0.333 \\
+-21.67 & 5.00
+\end{bmatrix}
+$$
+
+<Callout type="note">
+Mô hình tuyến tính hóa thường bám tốt mô hình phi tuyến khi hệ vận hành gần điểm cân bằng, và kém dần khi đi quá xa vùng này.
+</Callout>
+
+## 5. Ứng dụng trong robot và AI
+
+Trong robot học:
+
+$$
+\dot{x}=J(q)\dot{q}
+$$
+
+Jacobian liên hệ vận tốc khớp với vận tốc đầu cuối. Tại điểm kỳ dị ($\det(J)=0$), robot có thể mất bậc tự do theo một hướng.
+
+Trong học sâu, Jacobian là lõi của lan truyền ngược theo quy tắc chuỗi:
+
+$$
+\frac{\partial L}{\partial x}=\frac{\partial L}{\partial y}\,J_F(x)
+$$
+
+<AIHook href="/research/diffusion-models">Liên hệ research: diffusion models</AIHook>
+
+## 6. Câu hỏi mở và thách thức
+
+1. Làm sao duy trì ổn định khi hệ hoạt động xa điểm tuyến tính hóa?
+2. Làm sao điều khiển robot khi buộc đi qua vùng Jacobian suy biến?
+3. Có thể dùng regularization Jacobian để tăng độ robust cho mô hình AI không?
+
+---
+
+<PrimitiveRef slug="jacobian">Tham chiếu nhanh tới chính bài Jacobian</PrimitiveRef>

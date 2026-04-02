@@ -1,0 +1,19 @@
+---
+interface Props {
+  type?: 'insight' | 'warning' | 'note';
+}
+
+const { type = 'note' } = Astro.props as Props;
+
+const styles = {
+  insight: 'border-indigo-500 bg-indigo-50',
+  warning: 'border-amber-500 bg-amber-50',
+  note: 'border-slate-400 bg-slate-100'
+};
+---
+
+<div class={`my-6 border-l-4 p-4 ${styles[type]}`}>
+  <div class="text-sm leading-relaxed text-slate-800">
+    <slot />
+  </div>
+</div>

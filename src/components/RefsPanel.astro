@@ -1,0 +1,36 @@
+---
+import { getEntry, type CollectionEntry } from 'astro:content';
+
+interface Props {
+  primitiveRefs?: string[];
+  researchRefs?: string[];
+}
+
+const { primitiveRefs = [], researchRefs = [] } = Astro.props as Props;
+
+const primitiveEntries = (
+  await Promise.all(primitiveRefs.map((slug) => getEntry('primitives', slug)))
+).filter(Boolean) as CollectionEntry<'primitives'>[];
+
+const researchEntries = (
+  await Promise.all(researchRefs.map((slug) => getEntry('research', slug)))
+).filter(Boolean) as CollectionEntry<'research'>[];
+---
+
+{(primitiveEntries.length > 0 || researchEntries.length > 0) && (
+  <section class="mt-4 rounded-md border border-slate-200 bg-slate-100 p-3 lg:mt-0">
+    <h2 class="mb-3 text-xs uppercase tracking-[0.12em] text-slate-500">References</h2>
+    <div class="flex flex-wrap gap-2">
+      {primitiveEntries.map((entry) => (
+        <a href={`/primitives/${entry.id}`} class="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs text-indigo-700">
+          {entry.data.title}
+        </a>
+      ))}
+      {researchEntries.map((entry) => (
+        <a href={`/research/${entry.id}`} class="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-1 text-xs text-teal-700">
+          {entry.data.title}
+        </a>
+      ))}
+    </div>
+  </section>
+)}
