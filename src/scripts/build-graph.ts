@@ -46,7 +46,16 @@ function toPath(url: URL): string {
 
 async function getEntries<T extends { title: string; draft?: boolean }>(collectionName: string) {
   const collectionDir = join(process.cwd(), 'src', 'content', collectionName);
-  const files = await readdir(collectionDir);
+  let files: string[] = [];
+  try {
+    files = await readdir(collectionDir);
+  } catch (error) {
+    const err = error as NodeJS.ErrnoException;
+    if (err.code === 'ENOENT') {
+      return [];
+    }
+    throw error;
+  }
   const entries: { slug: string; data: T }[] = [];
 
   for (const file of files) {
