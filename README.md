@@ -4,9 +4,7 @@ Personal Knowledge Journal built with Astro.
 
 Mục tiêu của project:
 
-- Theo dõi primitive toán học nền tảng
-- Ghi chú research/AI trend
-- Viết các bài linking để nối ý giữa toán và ứng dụng
+- Ghi chú toán học và AI trong một luồng bài viết thống nhất
 
 ## Tech Stack
 
@@ -14,31 +12,21 @@ Mục tiêu của project:
 - MDX (`@astrojs/mdx`)
 - Tailwind CSS 4 (`@tailwindcss/vite`)
 - Math rendering (`remark-math`, `rehype-katex`)
-- Graph visualization (`d3-force`)
 
 ## Routes
 
 - `/` Home
-- `/primitives` Danh sách primitives
-- `/primitives/[slug]` Chi tiết primitive
-- `/research` Danh sách research
-- `/research/[slug]` Chi tiết research
-- `/linking` Danh sách linking notes
-- `/linking/[slug]` Chi tiết linking note
-- `/graph` Đồ thị kết nối nội dung
+- `/posts` Danh sách bài viết
+- `/posts/[...slug]` Chi tiết bài viết
 
 ## Content Model
 
-Schema định nghĩa tại `src/content.config.ts` với 3 collections:
-
-- `primitives`
-- `research`
-- `linking`
+Schema định nghĩa tại `src/content.config.ts` với collection `posts`.
 
 Quan trọng:
 
-- `id` bài viết lấy từ tên file trong thư mục content
-- Các trường tham chiếu chéo (`connections`, `primitiveRefs`, `researchRefs`) phải dùng đúng `id`
+- `id` bài viết lấy từ tên file trong `src/content`
+- Trường `refs` (nếu có) tham chiếu tới `id` bài viết khác
 
 Chi tiết đầy đủ cách viết frontmatter + MDX components:
 
@@ -53,12 +41,8 @@ Chi tiết đầy đủ cách viết frontmatter + MDX components:
 ├── src/
 │   ├── components/
 │   ├── content/
-│   │   ├── primitives/
-│   │   ├── research/
-│   │   └── linking/
 │   ├── layouts/
 │   ├── pages/
-│   ├── scripts/
 │   └── content.config.ts
 ├── GUIDE.md
 ├── astro.config.mjs

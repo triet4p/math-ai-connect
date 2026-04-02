@@ -15,18 +15,151 @@ const {
 ---
 
 <BaseLayout title={`${title} | Knowledge Journal`}>
-  <article class="space-y-6">
-    <header class="space-y-3 border-b border-slate-200 pb-4">
-      <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Post</p>
-      <h1 class="text-3xl font-semibold leading-tight text-slate-900">{title}</h1>
-      <div class="flex flex-wrap items-center gap-3 text-sm text-slate-600">
-        <span>{publishedAt.toISOString().slice(0, 10)}</span>
-        {tags.length > 0 && <span>{tags.join(' • ')}</span>}
-      </div>
-    </header>
+  <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_260px]">
+    <article class="space-y-6">
+      <header class="space-y-3 border-b border-slate-200 pb-4">
+        <p class="text-xs uppercase tracking-[0.12em] text-slate-500">Post</p>
+        <h1 class="text-3xl font-semibold leading-tight text-slate-900">{title}</h1>
+        <div class="flex flex-wrap items-center gap-3 text-sm text-slate-600">
+          <span>{publishedAt.toISOString().slice(0, 10)}</span>
+          {tags.length > 0 && <span>{tags.join(' • ')}</span>}
+        </div>
+      </header>
 
-    <div class="prose prose-slate max-w-none">
-      <slot />
-    </div>
-  </article>
+      <div id="post-content" class="prose prose-slate max-w-none">
+        <slot />
+      </div>
+    </article>
+
+    <aside class="hidden lg:block">
+      <div class="sticky top-6 rounded-md border border-slate-200 bg-slate-50 p-4">
+        <h2 class="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-700">Table of Contents</h2>
+        <nav id="toc" class="text-sm"></nav>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const content = document.getElementById('post-content');
+    const tocContainer = document.getElementById('toc');
+
+    if (content && tocContainer) {
+      const headingSelector = 'h2, h3';
+      const headings = Array.from(content.querySelectorAll(headingSelector)) as HTMLHeadingElement[];
+
+      const slugify = (value: string) => value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+
+      const makeId = (heading: HTMLHeadingElement) => {
+        if (heading.id) {
+          return heading.id;
+        }
+        const base = slugify(heading.textContent ?? 'section') || 'section';
+        let candidate = base;
+        let index = 2;
+        while (document.getElementById(candidate)) {
+          candidate = `${base}-${index}`;
+          index += 1;
+        }
+        heading.id = candidate;
+        return candidate;
+      };
+
+      const getLevel = (heading: HTMLHeadingElement) => Number(heading.tagName.slice(1));
+
+      const getSectionElements = (heading: HTMLHeadingElement) => {
+        const level = getLevel(heading);
+        const section: HTMLElement[] = [];
+        let cursor = heading.nextElementSibling;
+        while (cursor) {
+          if (cursor.matches(headingSelector) && getLevel(cursor as HTMLHeadingElement) <= level) {
+            break;
+          }
+          section.push(cursor as HTMLElement);
+          cursor = cursor.nextElementSibling;
+        }
+        return section;
+      };
+
+      const setHeadingCollapsed = (heading: HTMLHeadingElement, collapsed: boolean) => {
+        const section = getSectionElements(heading);
+        for (const el of section) {
+          el.style.display = collapsed ? 'none' : '';
+        }
+
+        const btn = heading.querySelector('[data-collapse-btn="true"]');
+        if (btn) {
+          btn.textContent = collapsed ? 'Show' : 'Collapse';
+          btn.setAttribute('aria-expanded', String(!collapsed));
+        }
+        heading.dataset.collapsed = collapsed ? 'true' : 'false';
+      };
+
+      for (const heading of headings) {
+        const id = makeId(heading);
+        const level = getLevel(heading);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.collapseBtn = 'true';
+        button.className = 'ml-2 rounded border border-slate-300 px-2 py-0.5 text-[11px] font-medium text-slate-600 hover:bg-slate-100';
+        button.textContent = 'Collapse';
+        button.setAttribute('aria-controls', id);
+        button.setAttribute('aria-expanded', 'true');
+
+        heading.classList.add('flex', 'items-center', 'gap-2');
+        heading.appendChild(button);
+        heading.dataset.collapsed = 'false';
+
+        button.addEventListener('click', () => {
+          const collapsed = heading.dataset.collapsed === 'true';
+          const nextState = !collapsed;
+
+          setHeadingCollapsed(heading, nextState);
+
+          if (level === 2) {
+            const section = getSectionElements(heading);
+            const childHeadings = section.filter((el) => el.matches('h3')) as HTMLHeadingElement[];
+            for (const child of childHeadings) {
+              setHeadingCollapsed(child, nextState);
+            }
+
+            if (!nextState) {
+              for (const el of section) {
+                el.style.display = '';
+              }
+            }
+          }
+        });
+      }
+
+      if (headings.length === 0) {
+        tocContainer.innerHTML = '<p class="text-slate-500">No sections found.</p>';
+      } else {
+        const list = document.createElement('ul');
+        list.className = 'space-y-2';
+
+        for (const heading of headings) {
+          const level = getLevel(heading);
+          const item = document.createElement('li');
+          item.className = level === 3 ? 'ml-4' : '';
+
+          const link = document.createElement('a');
+          link.href = `#${heading.id}`;
+          link.className = 'text-slate-700 hover:text-slate-900';
+          link.textContent = heading.textContent?.replace(/Collapse|Show/g, '').trim() ?? '';
+
+          item.appendChild(link);
+          list.appendChild(item);
+        }
+
+        tocContainer.appendChild(list);
+      }
+    }
+  </script>
 </BaseLayout>
