@@ -23,7 +23,7 @@ function graphIntegration() {
 // https://astro.build/config
 export default defineConfig({
   site: `https://${owner}.github.io`,
-  base: `/${repo}`,
+  base: `/${repo}/`,
   vite: {
     plugins: [tailwindcss()]
   },

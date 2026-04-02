@@ -17,4 +17,14 @@
 	code {
 		@apply rounded bg-slate-100 px-1 py-0.5 font-mono text-sm;
 	}
+
+	.katex-display {
+		overflow-x: auto;
+		overflow-y: hidden;
+		padding-bottom: 0.25rem;
+	}
+
+	.katex-display > .katex {
+		white-space: nowrap;
+	}
 }
