@@ -7,6 +7,7 @@ interface Props {
 }
 
 const { primitiveRefs = [], researchRefs = [] } = Astro.props as Props;
+const BASE_URL = import.meta.env.BASE_URL;
 
 const primitiveEntries = (
   await Promise.all(primitiveRefs.map((slug) => getEntry('primitives', slug)))
@@ -22,12 +23,12 @@ const researchEntries = (
     <h2 class="mb-3 text-xs uppercase tracking-[0.12em] text-slate-500">References</h2>
     <div class="flex flex-wrap gap-2">
       {primitiveEntries.map((entry) => (
-        <a href={`/primitives/${entry.id}`} class="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs text-indigo-700">
+        <a href={`${BASE_URL}primitives/${entry.id}`} class="rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs text-indigo-700">
           {entry.data.title}
         </a>
       ))}
       {researchEntries.map((entry) => (
-        <a href={`/research/${entry.id}`} class="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-1 text-xs text-teal-700">
+        <a href={`${BASE_URL}research/${entry.id}`} class="rounded-full border border-teal-200 bg-teal-50 px-2.5 py-1 text-xs text-teal-700">
           {entry.data.title}
         </a>
       ))}

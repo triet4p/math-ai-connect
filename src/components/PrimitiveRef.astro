@@ -7,12 +7,13 @@ interface Props {
 
 const { slug } = Astro.props as Props;
 const entry = await getEntry('primitives', slug);
+const href = `${import.meta.env.BASE_URL}primitives/${slug}`;
 
 if (!entry) {
   throw new Error(`Unknown primitive slug: ${slug}`);
 }
 ---
 
-<a href={`/primitives/${slug}`} class="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700">
+<a href={href} class="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700">
   <slot>{entry.data.title}</slot>
 </a>

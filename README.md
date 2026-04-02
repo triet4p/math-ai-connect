@@ -1,43 +1,100 @@
-# Astro Starter Kit: Minimal
+# Math AI Connect
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Personal Knowledge Journal built with Astro.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Mục tiêu của project:
 
-## 🚀 Project Structure
+- Theo dõi primitive toán học nền tảng
+- Ghi chú research/AI trend
+- Viết các bài linking để nối ý giữa toán và ứng dụng
 
-Inside of your Astro project, you'll see the following folders and files:
+## Tech Stack
+
+- Astro 6
+- MDX (`@astrojs/mdx`)
+- Tailwind CSS 4 (`@tailwindcss/vite`)
+- Math rendering (`remark-math`, `rehype-katex`)
+- Graph visualization (`d3-force`)
+
+## Routes
+
+- `/` Home
+- `/primitives` Danh sách primitives
+- `/primitives/[slug]` Chi tiết primitive
+- `/research` Danh sách research
+- `/research/[slug]` Chi tiết research
+- `/linking` Danh sách linking notes
+- `/linking/[slug]` Chi tiết linking note
+- `/graph` Đồ thị kết nối nội dung
+
+## Content Model
+
+Schema định nghĩa tại `src/content.config.ts` với 3 collections:
+
+- `primitives`
+- `research`
+- `linking`
+
+Quan trọng:
+
+- `id` bài viết lấy từ tên file trong thư mục content
+- Các trường tham chiếu chéo (`connections`, `primitiveRefs`, `researchRefs`) phải dùng đúng `id`
+
+Chi tiết đầy đủ cách viết frontmatter + MDX components:
+
+- Xem `GUIDE.md`
+
+## Project Structure
 
 ```text
-/
+.
+├── .github/workflows/deploy.yml
 ├── public/
 ├── src/
-│   └── pages/
-│       └── index.astro
+│   ├── components/
+│   ├── content/
+│   │   ├── primitives/
+│   │   ├── research/
+│   │   └── linking/
+│   ├── layouts/
+│   ├── pages/
+│   ├── scripts/
+│   └── content.config.ts
+├── GUIDE.md
+├── astro.config.mjs
 └── package.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Scripts
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+```bash
+npm install
+npm run dev
+npm run build
+npm run preview
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
+## GitHub Pages Deployment
 
-## 🧞 Commands
+Workflow đã có sẵn tại:
 
-All commands are run from the root of the project, from a terminal:
+- `.github/workflows/deploy.yml`
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+Trigger hiện tại:
 
-## 👀 Want to learn more?
+- push vào `master` hoặc `main`
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Checklist deploy:
+
+1. Đảm bảo `astro.config.mjs` đúng:
+	- `site`: `https://<username>.github.io`
+	- `base`: `/<repo-name>`
+2. Vào GitHub `Settings -> Pages`
+3. Chọn `Source = GitHub Actions`
+4. Push code lên `master` hoặc `main`
+5. Theo dõi job trong tab `Actions`
+
+## Notes
+
+- Project đã xử lý base path cho GitHub Pages project-site (`/<repo-name>`).
+- Nếu collection rỗng, build vẫn có thể thành công nhưng sẽ có cảnh báo thiếu dữ liệu.

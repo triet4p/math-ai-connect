@@ -10,6 +10,10 @@ interface Props {
 }
 
 const { items = [] } = Astro.props as Props;
+const basePrefix = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const toHref = (href: string) =>
+  href.startsWith('/') ? `${basePrefix}${href}` : href;
 
 const colorByKind = {
   primitive: 'border-indigo-300 bg-indigo-50 text-indigo-700',
@@ -23,7 +27,7 @@ const colorByKind = {
     <h2 class="mb-3 text-lg font-semibold text-slate-900">Related posts</h2>
     <div class="flex flex-wrap gap-2">
       {items.map((item) => (
-        <a href={item.href} class={`rounded-full border px-3 py-1 text-xs font-medium ${colorByKind[item.kind]}`}>
+        <a href={toHref(item.href)} class={`rounded-full border px-3 py-1 text-xs font-medium ${colorByKind[item.kind]}`}>
           {item.title}
         </a>
       ))}

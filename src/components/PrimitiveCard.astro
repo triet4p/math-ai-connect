@@ -6,19 +6,20 @@ interface Props {
 }
 
 const { item } = Astro.props as Props;
+const href = `${import.meta.env.BASE_URL}primitives/${item.id}`;
 ---
 
 <article class="rounded-md border-l-4 border-indigo-600 bg-slate-100 p-4">
   <div class="mb-2 flex items-center justify-between gap-2">
     <div class="flex items-center gap-2">
       {item.data.symbol && <span class="rounded bg-white px-2 py-0.5 font-mono text-sm text-indigo-700">{item.data.symbol}</span>}
-      <a class="font-semibold text-slate-900" href={`/primitives/${item.id}`}>{item.data.title}</a>
+      <a class="font-semibold text-slate-900" href={href}>{item.data.title}</a>
     </div>
     <span class="rounded bg-white px-2 py-0.5 text-xs capitalize text-slate-600">{item.data.group}</span>
   </div>
   <p class="text-sm text-slate-700">{item.data.summary}</p>
   <div class="mt-3 flex flex-wrap gap-2">
-    {item.data.aiHooks.map((hook) => (
+    {(item.data.aiHooks ?? []).map((hook) => (
       <span class="rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs text-indigo-700">{hook}</span>
     ))}
   </div>

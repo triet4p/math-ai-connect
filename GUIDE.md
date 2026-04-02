@@ -23,6 +23,109 @@ Lưu ý:
 - Tên file sẽ là `id` bài viết (ví dụ `jacobian.mdx` -> id là `jacobian`)
 - Các trường `primitiveRefs`, `researchRefs`, `connections` phải tham chiếu đúng `id` file
 
+## Tổng quan nhanh
+
+- Schema collection nằm ở `src/content.config.ts`
+- Component MDX global map nằm ở `src/components/mdx-components.ts`
+- Định danh bài viết dùng `id` theo tên file, không có trường `slug` trong frontmatter
+
+## Lưu ý quan trọng trước khi viết
+
+- Trong Astro 6 content layer, định danh bài là `id` lấy từ tên file
+- Ví dụ `src/content/primitives/jacobian.mdx` thì `id = jacobian`
+- Các trường tham chiếu chéo phải trỏ vào `id` thật đang tồn tại
+
+## Giải thích đầy đủ tất cả trường
+
+### 1) Collection `primitives`
+
+Tham chiếu: `src/content.config.ts`
+
+- `title`
+  - Kiểu: `string`
+  - Bắt buộc: có
+  - Ý nghĩa: tiêu đề bài primitive
+- `symbol`
+  - Kiểu: `string`
+  - Bắt buộc: không
+  - Ý nghĩa: ký hiệu ngắn, ví dụ `J`, `H`, `∇`
+- `group`
+  - Kiểu: `enum`
+  - Bắt buộc: có
+  - Giá trị hợp lệ: `foundation`, `physics`, `geometry`, `theory`
+  - Ý nghĩa: nhóm primitive để phân loại ở trang grid
+- `summary`
+  - Kiểu: `string`
+  - Bắt buộc: có
+  - Ý nghĩa: mô tả 1 câu cho card/list
+- `connections`
+  - Kiểu: `string[]`
+  - Bắt buộc: có
+  - Ý nghĩa: danh sách `id` primitive liên quan
+- `aiHooks`
+  - Kiểu: `string[]`
+  - Bắt buộc: có
+  - Ý nghĩa: tag ứng dụng AI hiển thị dạng pill
+- `draft`
+  - Kiểu: `boolean`
+  - Bắt buộc: không
+  - Mặc định: `false`
+  - Ý nghĩa: `true` thì bị ẩn khỏi listing/build logic xuất bản
+- `publishedAt`
+  - Kiểu: `date` (coerce từ string)
+  - Bắt buộc: có
+  - Ý nghĩa: dùng để sort theo thời gian
+
+### 2) Collection `research`
+
+Tham chiếu: `src/content.config.ts`
+
+- `title`
+  - Kiểu: `string`
+  - Bắt buộc: có
+- `paperUrl`
+  - Kiểu: `string` URL
+  - Bắt buộc: không
+  - Ý nghĩa: link paper/source
+- `primitiveRefs`
+  - Kiểu: `string[]`
+  - Bắt buộc: có
+  - Ý nghĩa: danh sách `id` từ collection `primitives`
+- `trend`
+  - Kiểu: `string`
+  - Bắt buộc: có
+  - Ý nghĩa: nhãn xu hướng, ví dụ `diffusion`, `world-models`
+- `draft`
+  - Kiểu: `boolean`
+  - Bắt buộc: không
+  - Mặc định: `false`
+- `publishedAt`
+  - Kiểu: `date`
+  - Bắt buộc: có
+
+### 3) Collection `linking`
+
+Tham chiếu: `src/content.config.ts`
+
+- `title`
+  - Kiểu: `string`
+  - Bắt buộc: có
+- `primitiveRefs`
+  - Kiểu: `string[]`
+  - Bắt buộc: có
+  - Ý nghĩa: `id` primitive được nối ý
+- `researchRefs`
+  - Kiểu: `string[]`
+  - Bắt buộc: có
+  - Ý nghĩa: `id` research được nối ý
+- `draft`
+  - Kiểu: `boolean`
+  - Bắt buộc: không
+  - Mặc định: `false`
+- `publishedAt`
+  - Kiểu: `date`
+  - Bắt buộc: có
+
 ## Cú pháp MDX cơ bản
 
 MDX = Markdown + JSX component.
@@ -102,6 +205,45 @@ Project đã bật sẵn các component, bạn có thể dùng trực tiếp tro
 - `<Intuition>...</Intuition>`
 - `<AIHook href="/research/...">...</AIHook>`
 - `<PrimitiveRef slug="...">...</PrimitiveRef>`
+
+### Giải thích đầy đủ component
+
+Tham chiếu map: `src/components/mdx-components.ts`
+
+- `Callout`
+  - File: `src/components/Callout.astro`
+  - Props:
+    - `type?`: `insight | warning | note`
+    - Mặc định: `note`
+  - Công dụng: tạo khối nhấn mạnh theo ngữ cảnh
+- `Math`
+  - File: `src/components/Math.astro`
+  - Props:
+    - `label?`: `string`
+  - Công dụng: bọc công thức/đoạn toán trong khung riêng
+- `Intuition`
+  - File: `src/components/Intuition.astro`
+  - Props: không có
+  - Công dụng: khối diễn giải trực giác
+- `AIHook`
+  - File: `src/components/AIHook.astro`
+  - Props:
+    - `href`: `string` (bắt buộc)
+  - Công dụng: chip link tới bài AI/research liên quan
+- `PrimitiveRef`
+  - File: `src/components/PrimitiveRef.astro`
+  - Props:
+    - `slug`: `string` (bắt buộc)
+  - Ghi chú: tên prop là `slug` vì tương thích cách dùng cũ, nhưng giá trị truyền vào phải là `id` của primitive
+
+### Component nội bộ giao diện (không cần gọi trực tiếp trong MDX)
+
+- `RefsPanel` (`src/components/RefsPanel.astro`)
+  - Nhận `primitiveRefs`, `researchRefs` và render panel tham chiếu
+- `RelatedPosts` (`src/components/RelatedPosts.astro`)
+  - Nhận danh sách item liên quan để render chip cuối bài
+- `PrimitiveCard` (`src/components/PrimitiveCard.astro`)
+  - Nhận `item` từ collection `primitives` để render card ở list/grid
 
 Ví dụ:
 
@@ -216,13 +358,13 @@ Project đã có workflow tại `.github/workflows/deploy.yml`.
 Làm theo các bước sau:
 
 1. Tạo repo trên GitHub (ví dụ: `math-ai-connect`).
-2. Push code lên nhánh `main`.
+2. Push code lên nhánh `master` hoặc `main`.
 3. Vào GitHub: `Settings` -> `Pages`.
 4. Ở mục `Build and deployment`, chọn `Source = GitHub Actions`.
 5. Đảm bảo file `astro.config.mjs` có `site` và `base` đúng theo repo:
    - `site`: `https://<username>.github.io`
    - `base`: `/<repo-name>`
-6. Mỗi lần push `main`, workflow sẽ tự build và deploy.
+6. Mỗi lần push `master` hoặc `main`, workflow sẽ tự build và deploy.
 7. Xem kết quả tại tab `Actions` và link Pages sau khi job `deploy` thành công.
 
 ## Checklist nhanh trước khi push

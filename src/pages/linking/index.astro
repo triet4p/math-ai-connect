@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const entries = await getCollection('linking', ({ data }) => data.draft !== true);
 entries.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+const BASE_URL = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="Linking | Knowledge Journal">
@@ -15,7 +16,7 @@ entries.sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime
   <div class="space-y-3">
     {entries.map((entry) => (
       <article class="rounded-md border-l-4 border-amber-600 bg-slate-100 p-4">
-        <a class="font-semibold text-slate-900" href={`/linking/${entry.id}`}>{entry.data.title}</a>
+        <a class="font-semibold text-slate-900" href={`${BASE_URL}linking/${entry.id}`}>{entry.data.title}</a>
         <p class="mt-1 text-xs text-slate-500">{entry.data.publishedAt.toISOString().slice(0, 10)}</p>
       </article>
     ))}

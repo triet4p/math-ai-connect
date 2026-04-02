@@ -28,15 +28,15 @@ const [researchPosts, linkingPosts] = await Promise.all([
 ]);
 
 const connectedPrimitives = (
-  await Promise.all(entry.data.connections.map((ref) => getEntry('primitives', ref)))
+  await Promise.all((entry.data.connections ?? []).map((ref) => getEntry('primitives', ref)))
 ).filter(Boolean);
 
 const relatedFromResearch = researchPosts
-  .filter((post) => post.data.primitiveRefs.includes(entry.id))
+  .filter((post) => (post.data.primitiveRefs ?? []).includes(entry.id))
   .map((post) => ({ href: `/research/${post.id}`, title: post.data.title, kind: 'research' as const }));
 
 const relatedFromLinking = linkingPosts
-  .filter((post) => post.data.primitiveRefs.includes(entry.id))
+  .filter((post) => (post.data.primitiveRefs ?? []).includes(entry.id))
   .map((post) => ({ href: `/linking/${post.id}`, title: post.data.title, kind: 'linking' as const }));
 
 const related = [
@@ -51,7 +51,7 @@ const related = [
   collection="primitives"
   group={entry.data.group}
   publishedAt={entry.data.publishedAt}
-  primitiveRefs={entry.data.connections}
+  primitiveRefs={entry.data.connections ?? []}
   related={related}
 >
   <Content components={globalMdxComponents} />

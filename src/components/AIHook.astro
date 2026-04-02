@@ -4,8 +4,11 @@ interface Props {
 }
 
 const { href } = Astro.props as Props;
+const resolvedHref = href.startsWith('/')
+  ? `${import.meta.env.BASE_URL.replace(/\/$/, '')}${href}`
+  : href;
 ---
 
-<a href={href} class="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
+<a href={resolvedHref} class="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
   <slot />
 </a>

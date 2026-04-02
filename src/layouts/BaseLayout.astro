@@ -11,6 +11,8 @@ const {
   title = 'Knowledge Journal',
   description = 'Mathematical primitives, AI research notes, and linking insights.'
 } = Astro.props as Props;
+
+const BASE_URL = import.meta.env.BASE_URL;
 ---
 
 <!doctype html>
@@ -25,12 +27,12 @@ const {
   <body>
     <header class="border-b border-slate-200 bg-slate-100/60">
       <div class="mx-auto flex w-full max-w-[680px] items-center justify-between px-4 py-4">
-        <a href="/" class="font-semibold text-slate-900">Knowledge Journal</a>
+        <a href={BASE_URL} class="font-semibold text-slate-900">Knowledge Journal</a>
         <nav class="flex items-center gap-4 text-sm">
-          <a href="/primitives">Primitives</a>
-          <a href="/research">Research</a>
-          <a href="/linking">Linking</a>
-          <a href="/graph">Graph</a>
+          <a href={`${BASE_URL}primitives`}>Primitives</a>
+          <a href={`${BASE_URL}research`}>Research</a>
+          <a href={`${BASE_URL}linking`}>Linking</a>
+          <a href={`${BASE_URL}graph`}>Graph</a>
         </nav>
       </div>
     </header>
