@@ -1,0 +1,117 @@
+---
+title: Information Entropy và Kullback-Leibler Divergence
+summary: Information Entropy và Kullback-Leibler Divergence là các khái niệm quan trọng trong lý thuyết thông tin và thống kê, được sử dụng để đo lường sự khác biệt giữa các phân phối xác suất.
+tags:
+  - math
+  - information
+  - statistics
+draft: false
+publishedAt: 2026-04-02
+---
+
+## Information Theory và Random Variables (Biến ngẫu nhiên)
+
+### **Lý thuyết thông tin (Information Theory)**
+
+Lý thuyết thông tin là **một nhánh của toán học liên quan đến việc đo đạc, định lượng và mã hóa thông tin**. Cha đẻ của lý thuyết này là Claude Shannon, người đã nghiên cứu các phương pháp **mã hóa thông tin sao cho quá trình truyền tin đạt hiệu quả cao nhất (tiết kiệm số bit, băng thông hay dung lượng lưu trữ) mà không làm mất mát thông tin**. Để đo lường sự bất định hay độ "khó đoán" của thông tin, lý thuyết này giới thiệu khái niệm **Entropy (Information entropy)**. 
+
+### **Biến ngẫu nhiên (Random Variables)**
+
+Biến ngẫu nhiên là **một hàm số thực hiện việc gán một số thực cho mỗi biến cố của một thí nghiệm**. Khái niệm này được sử dụng khi kết cục của một thí nghiệm ngẫu nhiên là một số hoặc khi sự số hóa của kết cục đó được quan tâm. Biến ngẫu nhiên được phân loại thành 3 dạng chính:
+*   **Biến ngẫu nhiên rời rạc:** Khi các giá trị có thể xảy ra thuộc một tập hợp đếm được.
+*   **Biến ngẫu nhiên liên tục:** Khi hàm phân phối của nó có thể được biểu diễn dưới dạng tích phân của một hàm không âm.
+*   **Biến ngẫu nhiên hỗn hợp:** Là sự pha trộn giữa biến ngẫu nhiên rời rạc và liên tục.
+
+Để tính toán và xác định các đặc tính của biến ngẫu nhiên, người ta sử dụng **hàm phân phối xác suất và hàm mật độ xác suất**. Các đại lượng như **giá trị trung bình (kỳ vọng), phương sai và các mô-men** thường được dùng để tóm lược thông tin của biến ngẫu nhiên vì chúng dễ đo lường và ước lượng trong thực tiễn.
+
+### **Mối liên hệ giữa Lý thuyết thông tin và Biến ngẫu nhiên**
+
+Trong lý thuyết thông tin, các thuộc tính của biến ngẫu nhiên được dùng làm nền tảng để định lượng thông tin, thể hiện rõ nhất qua các đại lượng sau:
+*   **Entropy của biến ngẫu nhiên**
+*   **Sự biến thiên của Entropy** 
+*   **Thông tin tương hỗ (Mutual Information)** 
+
+## Entropy và các đại lượng liên quan
+
+### **1. Entropy (Độ bất định / Lượng thông tin)**
+
+Được Claude Shannon giới thiệu vào năm 1948, Entropy là đại lượng cốt lõi trong lý thuyết thông tin dùng để đo lường mức độ không chắc chắn, độ "khó đoán", hay lượng thông tin trung bình của một biến ngẫu nhiên. 
+
+Về mặt toán học, Entropy là kích thước mã hóa trung bình tối thiểu theo lý thuyết cho các sự kiện tuân theo một phân phối xác suất cụ thể. 
+
+*   **Công thức cho biến ngẫu nhiên rời rạc:** Nếu $X$ là một biến ngẫu nhiên rời rạc có hàm phân phối xác suất $p(x)$, Entropy được tính bằng:
+    $$H(X) = -\sum p(x) \log_2 p(x) = E_p[-\log p(X)]$$.
+    *(Lưu ý: Nếu logarit lấy cơ số 2, đơn vị của Entropy là bit. Ta quy ước $0 \log 0 = 0$ để tiện tính toán).*
+*   **Công thức cho biến ngẫu nhiên liên tục:** Nếu $X$ có hàm mật độ xác suất $f(x)$, Entropy (còn gọi là differential entropy) được tính bằng tích phân:
+    $$H(X) = -\int f(x) \ln f(x) dx$$.
+*   **Tính chất:** 
+    *   **Tính không âm:** $H(X) \ge 0$.
+    *   **Đạt cực đại khi phân phối đều:** $H(X) \le \log|X|$, dấu "=" xảy ra khi $X$ có các khả năng xảy ra là như nhau (phân phối đều), tức là mức độ khó đoán cao nhất.
+
+Bên cạnh Shannon Entropy, lý thuyết còn mở rộng với **Rényi Entropy**, một dạng tổng quát hóa thường được định nghĩa cho biến liên tục là $H_R(X) = \frac{1}{1-\alpha} \ln \int f(x)^\alpha dx$.
+
+### **2. Entropy Đồng thời (Joint Entropy) và Entropy Có điều kiện (Conditional Entropy)**
+
+Khi xét nhiều biến ngẫu nhiên, ta có các đại lượng mở rộng:
+
+*   **Joint Entropy $H(X, Y)$:** Đo lường độ bất định của cả hai biến ngẫu nhiên $X$ và $Y$ cùng lúc.
+    $$H(X, Y) = -\sum \sum p(x, y) \log p(x, y)$$.
+*   **Conditional Entropy $H(Y|X)$:** Đo lường độ bất định còn lại của $Y$ khi đã biết trước giá trị của $X$.
+    $$H(Y|X) = -\sum \sum p(x, y) \log p(y|x)$$.
+*   **Luật xích (Chain Rule):** Tổng độ bất định của hai biến bằng độ bất định của biến thứ nhất cộng với độ bất định của biến thứ hai khi đã biết biến thứ nhất:
+    $$H(X, Y) = H(X) + H(Y|X)$$.
+*   **Tính chất "Có điều kiện làm giảm Entropy":** Về trung bình, việc biết thêm thông tin về một biến sẽ làm giảm (hoặc giữ nguyên) sự không chắc chắn của biến kia: $H(X|Y) \le H(X)$. Dấu "=" xảy ra khi và chỉ khi $X$ và $Y$ độc lập.
+
+### **3. Cross Entropy (Entropy chéo)**
+
+Trong thực tế, ta thường không biết chính xác phân phối thực sự $P$ của một sự kiện, mà phải ước lượng nó bằng một phân phối $Q$. Cross Entropy đo lường số bit trung bình cần thiết (hoặc chi phí) để mã hóa/biểu diễn dữ liệu có phân phối thực tế $P$, nhưng lại sử dụng một bảng mã được tối ưu hóa theo phân phối ước lượng $Q$.
+
+*   **Công thức:** 
+    $$CrossEntropy(P, Q) = -\sum p_i \log_2 q_i$$.
+*   **Tính chất:** Cross Entropy đạt giá trị cực tiểu khi phân phối ước lượng $Q$ hoàn toàn trùng khớp với phân phối thực tế $P$. Nó rất nhạy cảm với sự sai khác giữa $p_i$ và $q_i$.
+
+### **4. KL Divergence (Kullback-Leibler Divergence / Relative Entropy)**
+
+KL Divergence, hay Entropy tương đối, là thước đo thống kê định lượng sự khác biệt ("khoảng cách") giữa phân phối thực tế $P$ và phân phối tham chiếu $Q$. Nói cách khác, nó cho biết **lượng thông tin/số bit bị tổn thất thêm** khi ta dùng $Q$ để xấp xỉ $P$.
+
+*   **Công thức:**
+    $$D_{KL}(P||Q) = \sum p(x) \log \frac{p(x)}{q(x)}$$.
+*   **Mối liên hệ với Cross Entropy và Entropy:** KL Divergence chính là hiệu số giữa Cross Entropy và Entropy nội tại của $P$:
+    $$D_{KL}(P||Q) = CrossEntropy(P, Q) - Entropy(P)$$.
+*   **Tính chất quan trọng:**
+    *   **Tính bất đối xứng:** KL Divergence không phải là khoảng cách theo nghĩa toán học thực sự vì $D_{KL}(P||Q) \neq D_{KL}(Q||P)$.
+    *   **Tính không âm (Bất đẳng thức thông tin):** $D_{KL}(P||Q) \ge 0$. Giá trị này bằng 0 khi và chỉ khi hai phân phối hoàn toàn giống nhau ($p(x) = q(x)$).
+
+### **5. Thông tin tương hỗ (Mutual Information)**
+
+Thông tin tương hỗ $I(X; Y)$ là độ đo cho biết một biến ngẫu nhiên chứa bao nhiêu lượng thông tin về một biến ngẫu nhiên khác. Nó có thể được định nghĩa thông qua KL Divergence giữa phân phối đồng thời (joint distribution) và tích của hai phân phối biên (marginal distributions).
+
+*   **Công thức:**
+    $$I(X; Y) = \sum \sum p(x, y) \log \frac{p(x, y)}{p(x)p(y)} = D_{KL}(p(x,y) || p(x)p(y))$$.
+*   **Mối liên hệ với Entropy:** Độ lượng thông tin chung này chính là mức độ bất định của $X$ đã được giảm đi nhờ biết $Y$:
+    $$I(X; Y) = H(X) - H(X|Y)$$.
+*   **Tính chất:** $I(X; Y) \ge 0$, và nó bằng 0 khi và chỉ khi $X$ và $Y$ hoàn toàn độc lập với nhau.
+
+## Ứng dụng
+
+### **1. Ứng dụng trong Trí tuệ Nhân tạo (AI) và Học máy (Machine Learning)**
+Trong AI, các đại lượng này là nền tảng để đánh giá, tối ưu hóa và huấn luyện mô hình:
+*   **Hàm mất mát (Loss Function):** Cross Entropy và KL Divergence được sử dụng rộng rãi làm hàm mất mát trong các mạng nơ-ron (neural networks) cho bài toán phân loại. Việc tối thiểu hóa KL Divergence giúp phân phối dự đoán của mô hình tiến sát nhất với phân phối của nhãn thực tế (dữ liệu thật). 
+*   **Mô hình Tạo sinh (Generative Models):** Trong các mô hình tự mã hóa biến thiên (Variational Autoencoders - VAEs), KL Divergence đóng vai trò điều chỉnh phân phối tiềm ẩn sao cho nó khớp với một phân phối chuẩn đã biết, giúp việc tạo ra mẫu dữ liệu mới hiệu quả hơn. Trong GANs (Generative Adversarial Networks), nó giúp so sánh phân phối dữ liệu thật và giả để tối ưu hóa bộ tạo (generator).
+*   **Học tăng cường (Reinforcement Learning):** Các thuật toán như TRPO (Trust Region Policy Optimization) dùng KL Divergence làm ràng buộc để kiểm soát mức độ cập nhật chính sách, ngăn mô hình thay đổi quá đột ngột gây mất ổn định trong quá trình huấn luyện.
+*   **Phát hiện dịch chuyển dữ liệu (Data Drift):** KL Divergence được dùng để theo dõi sự biến động của dữ liệu thực tế theo thời gian so với dữ liệu huấn luyện, từ đó đưa ra cảnh báo khi nào mô hình cần được huấn luyện lại.
+*   **Ước lượng hợp lý cực đại (Maximum Likelihood Estimation - MLE):** Về mặt toán học, việc tìm kiếm bộ tham số tối ưu (MLE) để mô hình khớp với dữ liệu thực chất chính là quá trình tìm cách giảm thiểu KL Divergence giữa phân phối dữ liệu thực tế và phân phối của mô hình.
+
+### **2. Ứng dụng trong Công nghệ Thông tin (IT) và Viễn thông**
+*   **Nén và truyền dẫn dữ liệu:** Thuyết thông tin của Shannon sử dụng Entropy để xác định giới hạn nén dữ liệu tối ưu. Nguyên tắc là gán các mã ngắn (ít bit) cho các thông tin/biến cố xuất hiện thường xuyên và mã dài hơn cho các biến cố hiếm, ứng dụng trực tiếp trong các định dạng như ZIP, MP3, JPG hay mã Morse để tiết kiệm băng thông truyền tải và dung lượng lưu trữ.
+*   **Mật mã học (Cryptography) và Bảo mật:** Mức độ an toàn của dữ liệu phụ thuộc vào việc tạo ra các khóa mã hóa không thể đoán trước được bằng bộ tạo số ngẫu nhiên (RNG). Các hệ thống bảo mật thu thập "Entropy" từ các nguồn nhiễu vật lý như chuyển động của chuột, thao tác gõ phím, hoặc hoạt động đọc/ghi ổ đĩa để làm đầu vào tạo khóa. Các tiêu chuẩn bảo mật khắt khe như FIPS 140-3 hay Common Criteria đều yêu cầu thiết bị phải chứng minh được có đủ lượng Entropy để sinh ra khóa an toàn.
+
+### **3. Ứng dụng trong Tài chính (Định giá tài sản và Cổ phiếu)**
+Gần đây, Entropy được ứng dụng mạnh mẽ trong kinh tế học để đo lường sự phân tán và rủi ro:
+*   **Đo lường rủi ro chứng khoán:** Thay vì dùng hệ số Beta truyền thống (thường có khả năng giải thích rủi ro thấp), các nhà nghiên cứu đã sử dụng Shannon Entropy và Rényi Entropy để đặc trưng cho mức độ bất định và rủi ro của chuỗi lợi suất cổ phiếu. 
+*   **Định giá tài sản:** Nhiều nghiên cứu thực nghiệm (bao gồm cả trên thị trường chứng khoán Việt Nam) đã chứng minh rằng việc đưa các độ đo rủi ro dựa trên Entropy vào mô hình định giá đem lại khả năng giải thích tỷ suất sinh lời của cổ phiếu tốt hơn hẳn so với hệ số Beta của mô hình CAPM truyền thống.
+
+### **4. Ứng dụng trong Tâm lý học và Đời sống (Mở rộng khái niệm)**
+Ngoài toán học, khái niệm Entropy còn được dùng để giải thích các quy luật trong tự nhiên và tâm lý xã hội:
+*   **Định luật Murphy và sự hỗn loạn:** Xu hướng vạn vật tự động đi đến trạng thái hỗn loạn ( Định luật 2 Nhiệt động lực học) giải thích lý do tại sao mọi thứ ở đời thường dễ gặp trục trặc hơn là suôn sẻ. Để duy trì sự có trật tự (như một mối quan hệ, một đội ngũ làm việc, hay dọn dẹp nhà cửa), con người bắt buộc phải tiêu tốn "năng lượng" và nỗ lực.
+*   **Quản trị tâm lý và môi trường:** Tâm lý con người dễ bị căng thẳng, lo âu, rối loạn khi đối diện với những sự kiện "phi tuyến tính" mang tính hỗn loạn (entropy cao). Bằng cách nhận diện, phân loại và chia nhỏ các rủi ro (thành tố hỗn loạn) trong cuộc sống để từng bước đưa vào kiểm soát, con người có thể làm giảm entropy của môi trường xung quanh, từ đó đạt được sự ổn định tâm lý.
