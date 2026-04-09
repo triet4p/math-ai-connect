@@ -1,0 +1,96 @@
+---
+title: Gradient & directional derivative
+summary: Gradient là vector chứa các đạo hàm riêng cấp nhất của một hàm số, còn đạo hàm hướng là sự thay đổi của hàm số theo một hướng cụ thể.
+tags:
+  - math
+  - calculus
+  - gradient
+  - derivative
+refs:
+  - jacobian
+  - hessian
+
+draft: false
+publishedAt: 2026-04-09
+---
+
+## **Vectơ Gradient (Vectơ độ dốc)**
+
+<Callout type="insight">
+**Định nghĩa và ý nghĩa:**
+Trong giải tích nhiều biến, **gradient** của một hàm số (hay trường vô hướng) là một vectơ được tạo thành từ tất cả các đạo hàm riêng cấp một của hàm số đó. Về mặt hình học và trực quan, gradient tại một điểm cụ thể luôn có chiều hướng về phía mà giá trị của hàm số tăng lên nhanh nhất (mức độ thay đổi lớn nhất). Đồng thời, độ lớn (module) của vectơ gradient biểu diễn chính xác tốc độ tăng lớn nhất đó. 
+</Callout>
+
+Để dễ hình dung, nếu ta xét sự phân bố nhiệt độ trong một căn phòng là một hàm số $T(x,y,z)$, thì tại bất kỳ vị trí nào, vectơ gradient sẽ chỉ về hướng di chuyển làm cho nhiệt độ tăng lên đột ngột nhất. Tương tự, nếu mô phỏng một ngọn đồi với hàm độ cao $H(x,y)$, gradient tại một điểm bất kỳ trên đồi sẽ là một vectơ chỉ theo hướng dốc thẳng đứng nhất đi lên đỉnh đồi, và độ lớn của nó chính là độ dốc của con đường đó.
+
+**Công thức của Gradient:**
+Cho một hàm số $n$ biến $f(x_1, x_2, \dots, x_n)$, gradient của nó thường được ký hiệu là $\nabla f$ (đọc là nabla $f$) hoặc $\text{grad} f$. Theo định nghĩa, gradient là một vectơ cột chứa các đạo hàm riêng của $f$:
+<Math>
+$\nabla f = \left( \frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n} \right)^T$.
+</Math>
+
+Trường hợp phổ biến với hàm hai biến $f(x, y)$, vectơ gradient tại điểm $(x, y)$ được tính bằng công thức:
+$\nabla f(x, y) = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right) = \frac{\partial f}{\partial x}\vec{i} + \frac{\partial f}{\partial y}\vec{j}$ (trong đó $\vec{i}$ và $\vec{j}$ là hai vectơ đơn vị trên các trục tọa độ $Ox$ và $Oy$).
+Đối với hàm ba biến $f(x, y, z)$, công thức sẽ mở rộng thành:
+$\nabla f(x, y, z) = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}, \frac{\partial f}{\partial z} \right)$.
+
+## **Đạo hàm theo hướng (Directional Derivative)**
+
+<Callout type="insight">
+**Định nghĩa và ý nghĩa:**
+Đạo hàm theo hướng là đại lượng đo lường tốc độ thay đổi (tỷ lệ biến thiên tức thời) của một hàm số tại một điểm cụ thể, khi ta di chuyển dọc theo một hướng của một vectơ cho trước. Có thể coi đây là sự tổng quát hóa của khái niệm đạo hàm riêng. Các đạo hàm riêng theo biến $x$ hoặc $y$ thực chất chỉ là các trường hợp đặc biệt của đạo hàm theo hướng, khi vectơ hướng đi trùng với hướng của các trục tọa độ $Ox$ hoặc $Oy$.
+</Callout>
+
+**Công thức của Đạo hàm theo hướng:**
+Theo định nghĩa bằng giới hạn, đạo hàm theo hướng của hàm $f$ tại điểm $\mathbf{x}$ dọc theo một vectơ chỉ hướng $\mathbf{v}$ (khác vectơ không) được xác định bằng công thức:
+<Math>
+$\nabla_{\mathbf{v}} f(\mathbf{x}) = \lim_{h \to 0} \frac{f(\mathbf{x} + h\mathbf{v}) - f(\mathbf{x})}{h||\mathbf{v}||}$.
+</Math>
+
+Đối với không gian hai chiều, đạo hàm của hàm $f(x, y)$ theo hướng của một vectơ $\mathbf{u} = (u_1, u_2)$ tại điểm $(x_0, y_0)$ được viết cụ thể dưới dạng:
+<Math>
+$D_u f(x_0, y_0) = \lim_{t \to 0} \frac{f(x_0 + tu_1, y_0 + tu_2) - f(x_0, y_0)}{t}$.
+</Math>
+
+**Tính toán thông qua Gradient:**
+Việc tính giới hạn thường phức tạp, do đó nếu hàm $f$ khả vi (có đạo hàm) tại điểm đang xét, ta có thể tính đạo hàm theo hướng cực kỳ dễ dàng thông qua vectơ gradient. Cụ thể, đạo hàm theo hướng $\mathbf{v}$ bằng tích vô hướng (dot product) của vectơ gradient và vectơ đơn vị của $\mathbf{v}$:
+$\nabla_{\mathbf{v}} f(\mathbf{x}) = \nabla f(\mathbf{x}) \cdot \frac{\mathbf{v}}{||\mathbf{v}||}$.
+Trong nhiều tài liệu quy ước vectơ hướng đi $\mathbf{u}$ hoặc $\mathbf{v}$ đã được chuẩn hóa (tức là có độ dài bằng $1$), thì công thức trên có thể viết ngắn gọn lại thành:
+$\nabla_{\mathbf{v}} f(\mathbf{x}) = \nabla f(\mathbf{x}) \cdot \mathbf{v}$.
+
+## Mối liên hệ giữa Gradient & directional derivative và Jacobian, Hessian matrix
+
+### **Bản chất về mặt bậc đạo hàm và số chiều**
+
+Mối liên hệ căn bản nhất giữa 4 khái niệm này nằm ở **bậc của đạo hàm** và **đối tượng mà chúng áp dụng** (hàm vô hướng hay hàm vectơ). 
+
+1. **Gradient (Vectơ độ dốc):** Áp dụng cho một **hàm vô hướng** (scalar function) $f(x_1, \dots, x_n)$. Gradient, ký hiệu là $\nabla f$, là một **vectơ** tập hợp tất cả các đạo hàm riêng **bậc nhất** của $f$. Mọi thành phần của gradient đại diện cho tốc độ biến thiên theo từng trục tọa độ độc lập.
+2. **Đạo hàm theo hướng (Directional Derivative):** Cũng áp dụng cho hàm vô hướng $f$, nhưng nó là một **con số (đại lượng vô hướng)** thể hiện tốc độ thay đổi của hàm tại một điểm dọc theo một hướng bất kỳ. Khái niệm đạo hàm riêng thực chất chỉ là một trường hợp đặc biệt của đạo hàm theo hướng khi vectơ hướng đi dọc theo các trục tọa độ.
+3. **Ma trận Jacobian:** Là sự mở quát hóa của gradient dành cho **hệ nhiều hàm số** (hay hàm vectơ) $\mathbf{F}(x_1, \dots, x_n) = (f_1, \dots, f_m)$. Ma trận Jacobian là một **ma trận 2 chiều** chứa toàn bộ các đạo hàm riêng **bậc nhất** của tất cả các hàm thành phần này. Nếu hệ chỉ có một hàm duy nhất ($m=1$), ma trận Jacobian thực chất sẽ thu gọn lại chính là vectơ chuyển vị của Gradient.
+4. **Ma trận Hessian:** Là một **ma trận vuông** chứa tất cả các đạo hàm riêng **bậc hai** của một hàm vô hướng $f(x_1, \dots, x_n)$. Theo định lý Schwarz, nếu các đạo hàm riêng bậc hai liên tục, ma trận Hesse luôn là một **ma trận đối xứng** (các đạo hàm hỗn hợp như $f_{xy}$ và $f_{yx}$ bằng nhau). 
+
+### **Mối liên hệ toán học cốt lõi**
+
+* **Giữa Gradient và Đạo hàm theo hướng:** 
+Gradient chứa toàn bộ thông tin về sự thay đổi bậc nhất của hàm số. Do đó, đạo hàm theo hướng $\mathbf{v}$ (với $\mathbf{v}$ là vectơ đơn vị) được tính trực tiếp thông qua **tích vô hướng (dot product) của vectơ Gradient và vectơ hướng $\mathbf{v}$**: $\nabla_{\mathbf{v}} f(\mathbf{x}) = \mathbf{v} \cdot \nabla f(\mathbf{x})$. Nhờ tính chất của tích vô hướng, đạo hàm theo hướng sẽ đạt giá trị lớn nhất (hàm tăng nhanh nhất) khi hướng di chuyển cùng chiều với vectơ Gradient.
+* **Giữa Gradient và Ma trận Hessian:**
+Nếu ta coi vectơ Gradient $\nabla f$ là một "hàm vectơ" mới (đầu vào là $n$ biến, đầu ra là một vectơ $n$ chiều), thì **ma trận Jacobian của trường vectơ Gradient này chính là ma trận Hessian của hàm $f$**. Nói cách khác, Hessian đo lường "tốc độ thay đổi của Gradient" khi ta di chuyển trong không gian, đại diện cho độ cong (curvature) của đồ thị hàm số.
+
+### **Mối liên hệ trong Ứng dụng và Tối ưu hóa**
+
+Bốn công cụ này phối hợp chặt chẽ với nhau để giải quyết các bài toán khảo sát hàm số, tối ưu hóa và phân tích hình học:
+
+1. **Khảo sát hệ phương trình và phép đổi biến (Vai trò của Jacobian):** 
+Định thức của ma trận Jacobian (Jacobian determinant) đóng vai trò quyết định trong **Định lý hàm ẩn (Implicit Function Theorem)**. Khi có một hệ phương trình, nếu định thức Jacobian của các hàm đối với các biến phụ thuộc khác $0$, hệ sẽ xác định duy nhất một cặp hàm ẩn khả vi cục bộ. Ngoài ra, trong tích phân bội, định thức Jacobian dùng để tính tỷ lệ co giãn diện tích/thể tích khi thực hiện các **phép đổi biến số** (ví dụ: chuyển từ tọa độ Descartes sang tọa độ cực).
+
+2. **Tìm điểm dừng (Vai trò của Gradient):**
+Trong các bài toán tối ưu (như thuật toán Gradient Descent trong học máy), bước đầu tiên để tìm giá trị lớn nhất/nhỏ nhất là đi tìm **điểm dừng (stationary point)**. Điểm dừng là nơi mà hàm số không còn dốc theo bất kỳ hướng nào, đồng nghĩa với việc **toàn bộ các thành phần của vectơ Gradient đều bằng $0$**.
+
+3. **Phân loại cực trị (Vai trò của Hessian):**
+Việc Gradient bằng $0$ chỉ cho biết đó là điểm dừng (có thể là cực đại, cực tiểu, hoặc điểm yên ngựa - saddle point), nhưng không thể phân loại được. Đây là lúc ma trận Hessian tham gia với vai trò là **điều kiện đủ**.
+Dựa vào dạng toàn phương (quadratic form) xác định bởi ma trận Hessian tại điểm dừng:
+
+* Nếu dạng toàn phương **xác định dương** (Hessian là ma trận xác định dương), hàm số đạt **cực tiểu địa phương**.
+* Nếu dạng toàn phương **xác định âm** (Hessian là ma trận xác định âm), hàm số đạt **cực đại địa phương**.
+
+Hessian cũng được mở rộng để đánh giá cực trị có điều kiện thông qua phương pháp nhân tử Lagrange, nơi ta xét dấu của định thức ma trận Hessian mở rộng (Bordered Hessian).
