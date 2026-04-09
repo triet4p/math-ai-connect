@@ -32,9 +32,9 @@ const {
     </article>
 
     <aside class="hidden lg:block">
-      <div class="sticky top-6 rounded-md border border-slate-200 bg-slate-50 p-4">
+      <div class="sticky top-6 flex max-h-[calc(100vh-1.5rem)] flex-col rounded-md border border-slate-200 bg-slate-50 p-4">
         <h2 class="mb-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-700">Table of Contents</h2>
-        <nav id="toc" class="text-sm"></nav>
+        <nav id="toc" class="min-h-0 flex-1 overflow-y-auto pr-1 text-sm"></nav>
       </div>
     </aside>
   </div>
@@ -72,93 +72,115 @@ const {
 
       const getLevel = (heading: HTMLHeadingElement) => Number(heading.tagName.slice(1));
 
-      const getSectionElements = (heading: HTMLHeadingElement) => {
-        const level = getLevel(heading);
-        const section: HTMLElement[] = [];
-        let cursor = heading.nextElementSibling;
-        while (cursor) {
-          if (cursor.matches(headingSelector) && getLevel(cursor as HTMLHeadingElement) <= level) {
-            break;
-          }
-          section.push(cursor as HTMLElement);
-          cursor = cursor.nextElementSibling;
-        }
-        return section;
+      type TocGroup = {
+        id: string;
+        text: string;
+        children: Array<{ id: string; text: string }>;
       };
 
-      const setHeadingCollapsed = (heading: HTMLHeadingElement, collapsed: boolean) => {
-        const section = getSectionElements(heading);
-        for (const el of section) {
-          el.style.display = collapsed ? 'none' : '';
-        }
-
-        const btn = heading.querySelector('[data-collapse-btn="true"]');
-        if (btn) {
-          btn.textContent = collapsed ? 'Show' : 'Collapse';
-          btn.setAttribute('aria-expanded', String(!collapsed));
-        }
-        heading.dataset.collapsed = collapsed ? 'true' : 'false';
-      };
+      const tocGroups: TocGroup[] = [];
 
       for (const heading of headings) {
         const id = makeId(heading);
         const level = getLevel(heading);
+        const text = heading.textContent?.trim() ?? '';
 
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.dataset.collapseBtn = 'true';
-        button.className = 'ml-2 rounded border border-slate-300 px-2 py-0.5 text-[11px] font-medium text-slate-600 hover:bg-slate-100';
-        button.textContent = 'Collapse';
-        button.setAttribute('aria-controls', id);
-        button.setAttribute('aria-expanded', 'true');
+        if (!text) {
+          continue;
+        }
 
-        heading.classList.add('flex', 'items-center', 'gap-2');
-        heading.appendChild(button);
-        heading.dataset.collapsed = 'false';
+        if (level === 2) {
+          tocGroups.push({ id, text, children: [] });
+          continue;
+        }
 
-        button.addEventListener('click', () => {
-          const collapsed = heading.dataset.collapsed === 'true';
-          const nextState = !collapsed;
-
-          setHeadingCollapsed(heading, nextState);
-
-          if (level === 2) {
-            const section = getSectionElements(heading);
-            const childHeadings = section.filter((el) => el.matches('h3')) as HTMLHeadingElement[];
-            for (const child of childHeadings) {
-              setHeadingCollapsed(child, nextState);
-            }
-
-            if (!nextState) {
-              for (const el of section) {
-                el.style.display = '';
-              }
-            }
+        if (level === 3) {
+          const parent = tocGroups[tocGroups.length - 1];
+          if (parent) {
+            parent.children.push({ id, text });
+          } else {
+            tocGroups.push({ id, text, children: [] });
           }
-        });
+        }
       }
 
-      if (headings.length === 0) {
+      if (tocGroups.length === 0) {
         tocContainer.innerHTML = '<p class="text-slate-500">No sections found.</p>';
       } else {
         const list = document.createElement('ul');
         list.className = 'space-y-2';
 
-        for (const heading of headings) {
-          const level = getLevel(heading);
+        for (let index = 0; index < tocGroups.length; index += 1) {
+          const group = tocGroups[index];
           const item = document.createElement('li');
-          item.className = level === 3 ? 'ml-4' : '';
+
+          const row = document.createElement('div');
+          row.className = 'flex items-start gap-2';
 
           const link = document.createElement('a');
-          link.href = `#${heading.id}`;
-          link.className = 'text-slate-700 hover:text-slate-900';
-          link.textContent = heading.textContent?.replace(/Collapse|Show/g, '').trim() ?? '';
+          link.href = `#${group.id}`;
+          link.className = 'flex-1 text-slate-700 hover:text-slate-900';
+          link.textContent = group.text;
 
-          item.appendChild(link);
+          row.appendChild(link);
+
+          if (group.children.length > 0) {
+            const childListId = `toc-children-${index}`;
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'rounded border border-slate-300 px-2 py-0.5 text-[11px] font-medium text-slate-600 hover:bg-slate-100';
+            toggle.textContent = 'Collapse';
+            toggle.dataset.tocToggle = childListId;
+            toggle.setAttribute('aria-controls', childListId);
+            toggle.setAttribute('aria-expanded', 'true');
+            row.appendChild(toggle);
+          }
+
+          item.appendChild(row);
+
+          if (group.children.length > 0) {
+            const children = document.createElement('ul');
+            children.id = `toc-children-${index}`;
+            children.className = 'mt-1 ml-4 space-y-1';
+
+            for (const child of group.children) {
+              const childItem = document.createElement('li');
+              const childLink = document.createElement('a');
+              childLink.href = `#${child.id}`;
+              childLink.className = 'text-slate-600 hover:text-slate-900';
+              childLink.textContent = child.text;
+              childItem.appendChild(childLink);
+              children.appendChild(childItem);
+            }
+
+            item.appendChild(children);
+          }
+
           list.appendChild(item);
         }
 
         tocContainer.appendChild(list);
+
+        tocContainer.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLButtonElement)) {
+            return;
+          }
+
+          const childListId = target.dataset.tocToggle;
+          if (!childListId) {
+            return;
+          }
+
+          const childList = document.getElementById(childListId);
+          if (!childList) {
+            return;
+          }
+
+          const isCollapsed = childList.classList.toggle('hidden');
+          target.textContent = isCollapsed ? 'Show' : 'Collapse';
+          target.setAttribute('aria-expanded', String(!isCollapsed));
+        });
       }
     }
   </script>
