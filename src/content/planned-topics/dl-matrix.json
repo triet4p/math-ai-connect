@@ -1,0 +1,7 @@
+{
+    "tag": "dl-matrix",
+    "note": "Ma trận Jacobian và Hessian trong huấn luyện và tối ưu mạng học sâu, loss.",
+    "status": "planned",
+    "priority": "medium",
+    "updatedAt": "2026-04-09"
+}

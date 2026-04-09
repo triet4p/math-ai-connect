@@ -1,0 +1,7 @@
+{
+    "tag": "anomaly-detection-threshold-based",
+    "note": "Phát hiện bất thường bằng cách sử dụng ngưỡng trên phân phối loss.",
+    "status": "planned",
+    "priority": "medium",
+    "updatedAt": "2026-04-09"
+}

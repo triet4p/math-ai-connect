@@ -1,0 +1,7 @@
+{
+    "tag": "bayes-optuna",
+    "note": "Ứng dụng của tối ưu Bayes trong việc chọn siêu tham số cho mô hình học máy.",
+    "status": "planned",
+    "priority": "low",
+    "updatedAt": "2026-04-09"
+}

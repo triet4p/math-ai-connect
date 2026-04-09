@@ -1,0 +1,74 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const plans = await getCollection('plannedTopics');
+const statusOrder = {
+  planned: 1,
+  researching: 2,
+  'on-hold': 3,
+  done: 4
+} as const;
+const priorityOrder = {
+  high: 1,
+  medium: 2,
+  low: 3
+} as const;
+
+plans.sort((a, b) => {
+  const byStatus = statusOrder[a.data.status] - statusOrder[b.data.status];
+  if (byStatus !== 0) return byStatus;
+  const byPriority = priorityOrder[a.data.priority] - priorityOrder[b.data.priority];
+  if (byPriority !== 0) return byPriority;
+  const timeA = a.data.updatedAt?.getTime() ?? 0;
+  const timeB = b.data.updatedAt?.getTime() ?? 0;
+  return timeB - timeA;
+});
+
+const statusLabel = {
+  planned: 'Planned',
+  researching: 'Researching',
+  'on-hold': 'On hold',
+  done: 'Done'
+} as const;
+const priorityLabel = {
+  high: 'High',
+  medium: 'Medium',
+  low: 'Low'
+} as const;
+---
+
+<BaseLayout title="Plans | Knowledge Journal">
+  <header class="mb-6 space-y-2">
+    <h1 class="text-3xl font-semibold text-slate-900">Planned Topics</h1>
+    <p class="text-slate-600">Danh mục thẻ/chủ đề đang lên kế hoạch nghiên cứu để nhắc nhớ và theo dõi tiến độ.</p>
+  </header>
+
+  {plans.length === 0 ? (
+    <p class="rounded-md border border-slate-200 bg-slate-50 p-4 text-slate-600">
+      Chưa có chủ đề kế hoạch. Hãy thêm file JSON mới trong thư mục src/content/planned-topics.
+    </p>
+  ) : (
+    <div class="space-y-3">
+      {plans.map((plan) => (
+        <article class="rounded-md border-l-4 border-emerald-600 bg-slate-100 p-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="text-lg font-semibold text-slate-900">#{plan.data.tag}</h2>
+            <span class="rounded-full border border-slate-300 bg-white px-2 py-0.5 text-xs text-slate-700">
+              {statusLabel[plan.data.status]}
+            </span>
+            <span class="rounded-full border border-slate-300 bg-white px-2 py-0.5 text-xs text-slate-700">
+              Priority: {priorityLabel[plan.data.priority]}
+            </span>
+          </div>
+
+          {plan.data.note && <p class="mt-2 text-sm text-slate-600">{plan.data.note}</p>}
+
+          {plan.data.updatedAt && (
+            <p class="mt-2 text-xs text-slate-500">Updated: {plan.data.updatedAt.toISOString().slice(0, 10)}</p>
+          )}
+        </article>
+      ))}
+    </div>
+  )}
+</BaseLayout>

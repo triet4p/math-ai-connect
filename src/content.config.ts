@@ -13,6 +13,18 @@ const posts = defineCollection({
   })
 });
 
+const plannedTopics = defineCollection({
+  loader: glob({ pattern: '**/*.json', base: './src/content/planned-topics' }),
+  schema: z.object({
+    tag: z.string(),
+    note: z.string().optional(),
+    status: z.enum(['planned', 'researching', 'on-hold', 'done']).default('planned'),
+    priority: z.enum(['low', 'medium', 'high']).default('medium'),
+    updatedAt: z.coerce.date().optional()
+  })
+});
+
 export const collections = {
-  posts
+  posts,
+  plannedTopics
 };

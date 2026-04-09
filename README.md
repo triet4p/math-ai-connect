@@ -18,15 +18,37 @@ Mục tiêu của project:
 - `/` Home
 - `/posts` Danh sách bài viết
 - `/posts/[...slug]` Chi tiết bài viết
+- `/plans` Danh mục thẻ/chủ đề đang có kế hoạch nghiên cứu
 
 ## Content Model
 
-Schema định nghĩa tại `src/content.config.ts` với collection `posts`.
+Schema định nghĩa tại `src/content.config.ts` với các collection:
+
+- `posts`: bài viết chính (`.md/.mdx` trong `src/content`)
+- `plannedTopics`: thẻ/chủ đề kế hoạch (`.json` trong `src/content/planned-topics`)
 
 Quan trọng:
 
 - `id` bài viết lấy từ tên file trong `src/content`
 - Trường `refs` (nếu có) tham chiếu tới `id` bài viết khác
+- Mỗi file JSON trong `src/content/planned-topics` là một chủ đề kế hoạch độc lập
+
+Ví dụ `plannedTopics`:
+
+```json
+{
+	"tag": "causal-inference",
+	"note": "Nghiên cứu DAG, do-calculus và các bẫy suy luận tương quan.",
+	"status": "planned",
+	"priority": "high",
+	"updatedAt": "2026-04-09"
+}
+```
+
+Giá trị hợp lệ:
+
+- `status`: `planned | researching | on-hold | done`
+- `priority`: `high | medium | low`
 
 Chi tiết đầy đủ cách viết frontmatter + MDX components:
 
