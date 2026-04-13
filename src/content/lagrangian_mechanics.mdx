@@ -1,0 +1,152 @@
+---
+title: Lagrangian Mechanics (Cơ học Lagrange)
+summary: Cơ học Lagrange là một cách tiếp cận trong vật lý để phân tích chuyển động của hệ thống cơ học, dựa trên nguyên lý cực tiểu hành trình.
+tags:
+  - physics
+  - mechanics
+  - robotics
+  - degrees-of-freedom
+draft: false
+publishedAt: 2026-04-13
+---
+
+## Các khái niệm cơ bản của Cơ học Lagrange
+
+Trong cơ học Newton cổ điển, chúng ta thường mô tả vị trí của mỗi chất điểm bằng hệ tọa độ Descartes ($x$, $y$, $z$) và phải phân tích chi tiết mọi lực tác dụng lên nó, kể cả các liên kết như lực căng dây hay phản lực pháp tuyến.
+
+Cơ học Lagrange tiếp cận vấn đề một cách thanh lịch và mang tính hình học hơn nhiều bằng cách giới thiệu các khái niệm trừu tượng nhưng vô cùng mạnh mẽ sau đây:
+
+### Bậc tự do (Degrees of Freedom - DoF)
+
+<Callout type="insight">
+**Định nghĩa**: Bậc tự do là số lượng tối thiểu các thông số độc lập cần thiết để xác định hoàn toàn vị trí (hay cấu hình) của một cơ hệ trong không gian
+</Callout>
+
+**Cách xác định**: Giả sử bạn có một hệ thống gồm $N$ chất điểm trong không gian ba chiều, mỗi chất điểm có 3 tọa độ, tổng số tọa độ ban đầu là $3N$. Tuy nhiên, nếu có $C$ liên kết (constraints) giữa các chất điểm, mỗi liên kết sẽ giảm đi một bậc tự do. Do đó, công thức tính bậc tự do là:
+$$\text{DoF} = 3N - C$$
+
+DoF rất hay được gặp trong các robot có nhiều khớp nối, nơi mỗi khớp nối sẽ giới hạn chuyển động của robot và do đó ảnh hưởng đến số lượng bậc tự do của nó.
+
+### Liên kết (Constraints) và Liên kết Holonomic (Holonomic Constraints)
+
+* **Liên kết**  là các điều kiện vật lý giới hạn chuyển động của các hạt trong một cơ hệ một cách cứng nhắc. Ví dụ, một hạt cườm bị buộc phải trượt dọc theo một sợi dây thép, hay khoảng cách giữa hai chất điểm trong một vật rắn luôn luôn không đổi.
+* **Liên kết Holonomic**: Trong khuôn khổ cơ bản của cơ học Lagrange, chúng ta đặc biệt quan tâm tới một loại liên kết gọi là Holonomic (liên kết khả tích). Đây là những liên kết chỉ phụ thuộc vào cấu hình hình học của hệ (có thể thêm cả thời gian) mà không phụ thuộc vận tốc.
+  Sự xuất hiện của các phương trình liên kết Holonomic cho phép chúng ta loại bỏ các tọa độ dư thừa. Các liên kết không thể viết dưới dạng phương trình Holonomic được gọi là Non-Holonomic và đòi hỏi xử lý phức tạp hơn.
+
+<Math label="Phương trình liên kết Holonomic"> 
+$$f(q_1, q_2, \ldots, q_n, t) = 0$$
+</Math>
+
+### Tọa độ suy rộng (Generalized Coordinates)
+
+Đây là khái niệm cốt lõi giúp cơ học Lagrange vượt trội hơn cơ học Newton đối với các hệ phức tạp.
+
+*   **Định nghĩa:** Thay vì dùng tọa độ Descartes, vị trí của cơ hệ có thể được mô tả thông qua một tập hợp các biến số độc lập $q = (q_1, q_2, ..., q_k)$ có số lượng đúng bằng số bậc tự do của hệ,. Tập hợp này được gọi là tọa độ suy rộng (hay tọa độ Lagrange). Mỗi tọa độ suy rộng sẽ mô tả chuyển động dọc theo một bậc tự do của cơ hệ,.
+*   **Tính linh hoạt:** Tọa độ suy rộng có thể mang bất kỳ thứ nguyên (đơn vị) nào phù hợp nhất với bài toán: nó có thể là độ dài, góc, diện tích,.... Tọa độ Descartes $(x, y, z)$ truyền thống thực chất chỉ là một trường hợp đặc biệt của tọa độ suy rộng.
+*   **Mối liên hệ:** Các tọa độ Descartes gốc của các chất điểm ($r_1, ..., r_N$) đều có thể được viết lại dưới dạng các hàm số phụ thuộc vào các tọa độ suy rộng mới này và thời gian: $r_i = r_i(q_1, ..., q_n, t)$,.
+*   **Ví dụ thực tế:** Hãy tưởng tượng một con lắc đơn (một vật nặng treo trên một sợi dây không giãn chiều dài $l$ giới hạn chuyển động trong mặt phẳng),. Mặc dù vật nặng di chuyển trong không gian 2D $(x, y)$, nhưng sợi dây tạo ra một liên kết hôlônôm: $x^2 + y^2 = l^2$. Do đó, hệ này chỉ có 1 bậc tự do. Thay vì dùng hai biến $x$ và $y$ rối rắm, ta chỉ cần chọn một tọa độ suy rộng duy nhất là góc lệch $\theta$ của dây treo so với phương thẳng đứng. Vị trí $(x, y)$ hoàn toàn có thể được tính ngược lại qua $\theta$ ($x = l \sin\theta, y = l \cos\theta$),.
+
+### Không gian cấu hình (Configuration Space)
+
+*   Từ các tọa độ suy rộng, cơ học Lagrange xây dựng nên một không gian $n$ chiều trừu tượng gọi là "Không gian cấu hình", nơi các trục tọa độ chính là các biến số $q_1, q_2, ..., q_n$,. 
+*   Trạng thái không gian của toàn bộ cơ hệ phức tạp (dù có bao nhiêu chất điểm đi nữa) tại bất kỳ thời điểm nào cũng chỉ được đại diện bởi **duy nhất một điểm** $q = (q_1, ..., q_n)$ trong không gian cấu hình này,. Quá trình hệ chuyển động theo thời gian chính là quá trình điểm đại diện này vẽ ra một quỹ đạo trong không gian cấu hình,.
+
+## Phép tính biến phân (Calculus of Variations)
+
+**Phép tính biến phân (Calculus of Variations)** là một nhánh của toán học đóng vai trò làm xương sống cho toàn bộ Cơ học Lagrange. 
+Nếu như vi tích phân thông thường (Calculus) giúp bạn tìm một "điểm" $x$ để hàm số $f(x)$ đạt cực trị, 
+thì Phép tính biến phân giúp bạn tìm ra một **"hàm số" (hoặc đường cong) $y(x)$** để làm cực trị hóa một **tích phân**. 
+
+Dưới đây là các chi tiết cốt lõi về nền tảng toán học này:
+
+### **1. Phiếm hàm (Functional) và Biến phân (Variation)**
+*   **Phiếm hàm:** Trong cơ học và toán học, ta thường cần tối ưu hóa một đại lượng được biểu diễn dưới dạng tích phân, ví dụ như: $F[y] = \int_a^b F(y, y'; x) dx$. Vì giá trị của tích phân này phụ thuộc hoàn toàn vào việc ta chọn hàm $y(x)$ như thế nào, nó được gọi là một "phiếm hàm" (được ký hiệu bằng ngoặc vuông $F[y]$).
+*   **Biến phân:** Để tìm hàm $y_0(x)$ làm cực tiểu hóa tích phân trên, ta đưa ra khái niệm "biến phân". Ta tưởng tượng một hàm số bị nhiễu loạn nhỏ so với quỹ đạo tối ưu: $y(x; \epsilon) = y_0(x) + \epsilon \delta y(x)$. Trong đó, $\delta y(x)$ là hàm biến phân đại diện cho sự thay đổi của đường cong, và bắt buộc phải bằng 0 tại các điểm biên: $\delta y(a) = 0$ và $\delta y(b) = 0$ (vì vị trí điểm đầu và điểm cuối của hệ thống là cố định),.
+
+### **2. Phương trình Euler loại I (Phương trình Euler-Lagrange)**
+*   Để phiếm hàm đạt cực trị, điều kiện dừng (stationarity condition) yêu cầu biến phân bậc nhất của nó phải bằng 0, tức là $\delta F = 0$ đối với mọi biến phân $\delta y(x)$ tùy ý.
+*   Bằng cách áp dụng tích phân từng phần và sử dụng điều kiện biên $\delta y(a) = \delta y(b) = 0$, ta thu được kết quả quan trọng nhất của Phép tính biến phân, gọi là **Phương trình Euler loại I**:
+    **$\frac{d}{dx} \left( \frac{\partial F}{\partial y'} \right) = \frac{\partial F}{\partial y}$**.
+*   Đây là một phương trình vi phân thường bậc hai. Bất kỳ hàm số $y(x)$ nào thỏa mãn phương trình này đều sẽ là nghiệm làm cực trị hóa tích phân ban đầu. (Sau này, phương trình này được chuyển thể trực tiếp thành phương trình chuyển động của cơ học Lagrange).
+
+### **3. Phương trình Euler loại II (Đồng nhất thức Beltrami)**
+*   Trong rất nhiều bài toán vật lý, hàm dưới dấu tích phân $F(y, y')$ **không phụ thuộc tường minh vào biến số $x$** (tức là $\frac{\partial F}{\partial x} = 0$).
+*   Khi đó, ta có thể kết hợp Phương trình Euler loại I để thu được một tích phân từng phần, gọi là **Phương trình Euler loại II**:
+    **$F - y' \frac{\partial F}{\partial y'} = \alpha$** (trong đó $\alpha$ là hằng số),.
+*   Phương trình này vô cùng hữu ích vì nó giúp ta giảm bậc của phương trình vi phân từ bậc hai xuống bậc một ($y'$), làm cho việc giải toán đơn giản hơn rất nhiều.
+
+### **4. Bài toán biến phân có liên kết (Constrained Variational Problems)**
+*   Giống như tối ưu hóa hàm số thông thường, đôi khi ta cần cực trị hóa một tích phân $\int f(y, y', x) dx$ với điều kiện một tích phân khác $\int g(y, y', x) dx$ phải được giữ bằng một hằng số $G$.
+*   Để giải quyết, ta sử dụng **Nhân tử Lagrange** ($\lambda$) để tạo ra một phiếm hàm mới: $F_\lambda[y] = \int [f(y, y', x) - \lambda g(y, y', x)] dx + \lambda G$. Từ đó, ta lại áp dụng Phương trình Euler cho phiếm hàm mới này.
+
+### **5. Các bài toán kinh điển ứng dụng Phép tính biến phân**
+Để hiểu rõ sức mạnh của công cụ toán học này, bạn có thể xem cách nó giải quyết các bài toán lịch sử:
+
+*   **Đường thẳng là khoảng cách ngắn nhất:** Áp dụng phương trình Euler để tối thiểu hóa tích phân chiều dài $L[y] = \int \sqrt{1 + (y')^2} dx$, ta dễ dàng chứng minh được đường có chiều dài ngắn nhất nối hai điểm trong mặt phẳng Euclid là đường thẳng ($y'' = 0$),,,.
+*   **Bài toán Đoản thời (Brachistochrone):** Do Johann Bernoulli đặt ra năm 1696. Tìm hình dạng của một sợi dây để một hạt cườm trượt không ma sát dưới tác dụng của trọng lực đi từ điểm A đến điểm B trong *thời gian ngắn nhất*,. Sử dụng phương trình Euler loại II, ta tìm được quỹ đạo tối ưu là đường cong hình **cycloid**,,.
+*   **Bài toán Đẳng chu (Isoperimetric Problem):** Tìm một đường cong khép kín có chu vi cho trước sao cho nó bao quanh một diện tích lớn nhất. Sử dụng nhân tử Lagrange, ta chứng minh được đường cong đó chính là hình tròn,.
+*   **Nguyên lý Fermat về thời gian ngắn nhất:** Trong quang học, ánh sáng đi từ điểm A đến điểm B trong một môi trường sẽ luôn chọn quỹ đạo đòi hỏi thời gian truyền là ngắn nhất,. Bằng phép tính biến phân, ta có thể thiết lập phương trình cho quỹ đạo của ánh sáng và từ đó suy ra trực tiếp **Định luật khúc xạ ánh sáng Snell**,.
+
+## Các nguyên lý cốt lõi của Cơ học Lagrange
+
+### **1. Nguyên lý Công ảo (Virtual Work) và Nguyên lý D'Alembert**
+
+Đóng góp đầu tiên để thoát khỏi Cơ học Newton là cách xử lý các lực liên kết (như lực căng dây, phản lực của bề mặt trượt).
+
+*   **Nguyên lý Công ảo:** Đối với một hệ ở trạng thái cân bằng tĩnh, tổng công ảo do tất cả các lực tác dụng lên hệ trong các chuyển dịch ảo (các dịch chuyển vô cùng bé thỏa mãn điều kiện ràng buộc của hệ) phải bằng 0: $\delta W = \sum_{i=1}^N F_i \cdot \delta x_i = 0$.
+*   **Nguyên lý D'Alembert:** Nhà toán học d'Alembert đã mở rộng nguyên lý cân bằng tĩnh này sang hệ động lực học bằng cách đưa thêm "lực gia tốc" (hay lực quán tính) $-m_i \ddot{x}_i$ vào phương trình: $\sum_{i=1}^N (F_i - m_i \ddot{x}_i) \cdot \delta x_i = 0$. Nguyên lý này phát biểu rằng tổng công sinh ra bởi tất cả các lực chủ động tác dụng lên hệ bằng đúng với công của các lực gia tốc.
+*   **Sức mạnh của D'Alembert:** Các lực liên kết (như lực ép vuông góc với quỹ đạo hoặc lực căng dọc theo sợi dây) luôn vuông góc với hướng chuyển dịch ảo của hạt, do đó công ảo của chúng bằng 0,,. Nhờ vậy, phương pháp này tự động loại bỏ hoàn toàn các lực liên kết phức tạp ra khỏi phương trình tính toán, giúp ta chỉ cần tập trung vào các lực chủ động.
+
+### **2. Hàm Lagrange (The Lagrangian)**
+
+Thông qua phép biến đổi toán học đối với Nguyên lý D'Alembert, thay vì khảo sát từng lực đơn lẻ, ta tập hợp thông tin của toàn bộ cơ hệ vào một hàm số vô hướng duy nhất gọi là **Hàm Lagrange** ($L$),.
+
+*   **Định nghĩa:** Đối với các hệ bảo toàn (nơi các lực chủ động sinh ra từ một thế năng), hàm Lagrange được định nghĩa là hiệu số giữa tổng Động năng ($T$ hoặc $K$) và tổng Thế năng ($V$ hoặc $U$) của hệ: $L(q, \dot{q}, t) = T - V$,,. 
+*   **Tính chất:** Hàm Lagrange là một hàm phụ thuộc vào các tọa độ suy rộng $q$, vận tốc suy rộng $\dot{q}$, và có thể phụ thuộc tường minh vào thời gian $t$,.
+*   **Tính không duy nhất:** Một tính chất thú vị của hàm Lagrange là nó không hoàn toàn duy nhất. Nếu bạn cộng thêm vào hàm Lagrange một đạo hàm toàn phần theo thời gian của một hàm số bất kỳ $f(q, t)$, tức là $L' = L + \frac{df}{dt}$, thì hàm $L'$ mới vẫn mô tả chính xác cùng một hệ thống vật lý và cho ra cùng một phương trình chuyển động,,.
+
+### **3. Nguyên lý Tác dụng Tối thiểu của Hamilton (Hamilton's Principle of Least Action)**
+
+Đây được xem là một trong những nguyên lý vĩ đại và bao quát nhất trong toàn bộ vật lý học, được đúc kết từ việc tích phân Nguyên lý D'Alembert theo thời gian,.
+
+*   **Tích phân Tác dụng (Action):** Dựa trên hàm $L$, ta định nghĩa một phiếm hàm gọi là "Tác dụng" $S$ của hệ thống trong khoảng thời gian từ $t_1$ đến $t_2$: 
+    $S[q] = \int_{t_1}^{t_2} L(q, \dot{q}, t) dt$,,.
+*   **Phát biểu nguyên lý:** Trong số vô vàn các quỹ đạo có thể có mà hệ thống đi từ trạng thái (cấu hình) ban đầu tại thời điểm $t_1$ đến trạng thái cuối tại $t_2$, quỹ đạo thực tế mà hệ thống tự nhiên sẽ tuân theo là quỹ đạo làm cho tích phân Tác dụng $S$ đạt giá trị dừng (thường là cực tiểu),. Nói cách khác, biến phân của Tác dụng phải bằng không: $\delta S = 0$.
+
+### **4. Phương trình Lagrange loại II (Euler-Lagrange Equations)**
+
+Áp dụng phép tính biến phân vào Nguyên lý Hamilton, chúng ta thu được phương trình chuyển động của hệ, đóng vai trò thay thế trực tiếp cho định luật II Newton ($F=ma$).
+
+*   **Phương trình cơ bản:** Để tích phân Tác dụng đạt cực trị, hàm $L$ phải thỏa mãn Phương trình Euler-Lagrange đối với mỗi bậc tự do $j$ (từ 1 đến $n$):
+    $\frac{d}{dt}\left(\frac{\partial L}{\partial \dot{q}_j}\right) - \frac{\partial L}{\partial q_j} = 0$,,,.
+*   **Trường hợp có lực không bảo toàn:** Nếu hệ có chịu tác dụng của các lực tiêu tán (như ma sát) hoặc các lực không sinh ra từ một trường thế năng, phương trình trên được mở rộng bằng cách giữ nguyên Động năng ($T$) ở vế trái và đặt "lực suy rộng" ($Q_j$) ở vế phải: 
+    $\frac{d}{dt}\left(\frac{\partial T}{\partial \dot{q}_j}\right) - \frac{\partial T}{\partial q_j} = Q_j$,.
+*   **Sự ưu việt về mặt tọa độ:** Trong khi phương trình Newton biểu diễn bằng vector và thay đổi hình thức nếu bạn chuyển từ tọa độ Descartes vuông góc sang tọa độ cực hoặc tọa độ cầu, thì **Phương trình Lagrange có tính bất biến hình thức**. Dù bạn chọn hệ tọa độ suy rộng nào đi nữa, phương trình vẫn luôn giữ nguyên đúng một dạng toán học duy nhất này,,.
+
+## Ứng dụng của Cơ học Lagrange
+
+### **1. Ứng dụng trong Trí tuệ Nhân tạo (AI) và Học máy (Machine Learning)**
+
+Trong lĩnh vực AI hiện đại, cơ học Lagrange đang tạo ra một cuộc cách mạng thông qua các kiến trúc mạng nơ-ron chuyên biệt, giúp AI "hiểu" được các định luật vật lý thay vì chỉ học vẹt từ dữ liệu:
+
+*   **Mạng Nơ-ron Lagrange (Lagrangian Neural Networks - LNNs) và Mạng Nơ-ron Hamilton (HNNs):** Các mạng nơ-ron tiêu chuẩn thường bỏ qua cấu trúc vật lý của hệ thống, dẫn đến việc dự đoán sai lệch trong dài hạn (ví dụ: làm tiêu hao năng lượng một cách vô lý). LNNs và HNNs giải quyết vấn đề này bằng cách trực tiếp học hàm Lagrange hoặc hàm Hamilton từ dữ liệu, sau đó sử dụng các phương trình Euler-Lagrange để dự đoán chuyển động. Điều này buộc AI phải tuân thủ nghiêm ngặt các định luật bảo toàn (như năng lượng, động lượng) và tôn trọng cấu trúc hình học của không gian pha, giúp đưa ra các dự đoán dài hạn cực kỳ chính xác.
+*   **Mạng Nơ-ron Lagrange Tổng quát (Generalized LNNs - GLNNs):** LNNs truyền thống bị giới hạn ở các hệ bảo toàn năng lượng. Tuy nhiên, trong thực tế, các hệ thống thường chịu tác động của ma sát hoặc lực cản (hệ không bảo toàn). GLNNs được phát triển dựa trên phương trình Lagrange tổng quát để tính toán cả các lực tiêu tán này. Bằng cách giữ lại ý nghĩa vật lý cốt lõi của hàm Lagrange, GLNNs cho phép AI dự đoán chính xác sự tiêu hao năng lượng và quỹ đạo của các hệ thống vật lý thực tế có ma sát (như con lắc đôi có ma sát).
+
+### **2. Ứng dụng trong Robot (Robotics) và Hệ thống điều khiển**
+
+Cơ học Lagrange là "ngôn ngữ mẹ đẻ" của kỹ thuật robot, đặc biệt trong việc mô hình hóa và điều khiển các cánh tay robot (robot manipulators):
+
+*   **Mô hình Động lực học Robot:** Động lực học Lagrange cung cấp mối quan hệ trực tiếp giữa các lực suy rộng (mô-men xoắn do động cơ tạo ra) và chuyển động của robot (sự thay đổi góc của các khớp). Bằng cách tính toán tổng động năng của tất cả các khớp và thế năng (do trọng lực), phương trình Euler-Lagrange tạo ra một hệ phương trình vi phân mô tả hoàn toàn chuyển động của robot ở dạng giải tích (closed form). 
+*   **Xử lý các hệ thống có liên kết (Constraints):** Phương pháp Lagrange cực kỳ mạnh mẽ trong việc xử lý các ràng buộc phức tạp của cơ cấu robot hoặc các hệ thống cơ khí, giúp các kỹ sư thiết kế chính xác các hệ thống truyền động và khớp nối mà không cần phải phân tích từng lực phản lực nhỏ.
+*   **Điều khiển tối ưu (Optimal Control):** Phép tính biến phân (nền tảng của cơ học Lagrange) được sử dụng để giải bài toán điều khiển tuyến tính-toàn phương (Linear-Quadratic Control). Nó giúp tính toán các tín hiệu đầu vào (controls) để đưa hệ thống robot từ trạng thái ban đầu đến trạng thái đích sao cho giảm thiểu tối đa một "chi phí" nhất định (ví dụ: tiêu tốn ít nhiên liệu nhất hoặc trong thời gian nhanh nhất).
+
+### **3. Ứng dụng trong Công nghệ thông tin (IT), Xử lý ảnh và Tài chính**
+
+*   **Giải phẫu điện toán (Computational Anatomy) và Khớp ảnh (Image Matching):** Trong y tế và đồ họa máy tính, việc so sánh hoặc theo dõi sự thay đổi hình dạng của các cấu trúc sinh học (như tim đập hoặc sự biến đổi của khối u) đòi hỏi các thuật toán phức tạp. Bằng cách sử dụng phương trình EPDiff (Euler-Poincaré trên nhóm các phép vi phôi), các kỹ sư máy tính có thể tìm ra "quỹ đạo ngắn nhất" (geodesic) để biến đổi một hình ảnh (template) thành một hình ảnh khác (target). Quá trình "biến hình" (morphing) này sử dụng cơ học Lagrange để tối thiểu hóa "chi phí biến dạng" của các điểm ảnh.
+*   **Mô hình hóa Thị trường Tài chính:** Các mạng nơ-ron HNNs và LNNs đang được ứng dụng để mô hình hóa và dự đoán các hệ thống tài chính phức tạp. Bằng cách coi thị trường như một hệ động lực học có các ràng buộc, LNNs/HNNs giúp định giá tài sản động, định giá chứng khoán phái sinh (chính xác hơn cả mô hình Black-Scholes truyền thống), dự báo xu hướng thị trường, dự báo biến động rủi ro tín dụng và tối ưu hóa phân bổ danh mục đầu tư trong giao dịch thuật toán.
+
+### **4. Ứng dụng trong Đời sống, Vật lý và Kỹ thuật**
+
+*   **Dự báo khí hậu và Hải dương học:** Động lực học chất lưu địa vật lý (Geophysical Fluid Dynamics - GFD) sử dụng các nguyên lý Lagrange và Euler-Poincaré để mô hình hóa sự lưu thông quy mô lớn của khí quyển và đại dương. Việc sử dụng các nguyên lý biến phân giúp tạo ra các mô hình tính toán có thể chạy trên siêu máy tính để dự báo biến đổi khí hậu trong thời gian dài, bằng cách tính toán trung bình hóa các biến động nhỏ mà không làm sai lệch tính chất bảo toàn của hệ thống.
+*   **Quang học và Cáp quang:** Nguyên lý Fermat về thời gian ngắn nhất (một dạng của phép tính biến phân) xác định rằng ánh sáng luôn đi theo quỹ đạo tốn ít thời gian nhất. Điều này được sử dụng để thiết kế các thấu kính, dự đoán đường đi của ánh sáng qua các môi trường không đồng nhất (như hiện tượng khúc xạ ánh sáng) và là nền tảng để thiết kế các hệ thống cáp quang trong viễn thông.
+*   **Thiết kế kỹ thuật thực tế:** Cơ học Lagrange được áp dụng để tính toán hình dạng cân bằng của các cấu trúc như dây cáp treo (catenary), hình dáng của màng xà phòng (diện tích bề mặt tối thiểu để thiết kế các kiến trúc mái vòm), bề mặt của chất lỏng trong thùng chứa (capillary surfaces), và kể cả việc tối ưu hóa thiết kế sinh cơ học (biomechanics) cho các chi giả của con người.
